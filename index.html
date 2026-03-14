@@ -3,140 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ipari 1v1 - Ultimate</title>
+    <title>Ipari 1v1</title>
     <style>
-        :root {
-            --common: #888; --uncommon: #2ecc71; --rare: #3498db; 
-            --epic: #9b59b6; --legendary: #f1c40f; --mythic: #e74c3c; --exotic: #00ffee;
-        }
-        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding-bottom: 150px; overflow-x: hidden; }
+        :root { --common: #888; --uncommon: #2ecc71; --rare: #3498db; --epic: #9b59b6; --legendary: #f1c40f; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding-bottom: 120px; touch-action: manipulation; }
         .hidden { display: none !important; }
         .page { padding: 20px; text-align: center; min-height: 100vh; }
-        
-        .deck-grid { display: flex; flex-direction: column; align-items: center; gap: 25px; }
-        .big-card { 
-            background: #1a1a1a; border: 5px solid var(--common); border-radius: 25px; 
-            color: white; padding: 15px; width: 300px; position: relative; text-align: left; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6); overflow: hidden;
-        }
-        .locked { filter: grayscale(1) brightness(0.4); }
-        .img-container { width: 100%; height: 210px; border-radius: 15px; background: #111; border: 1px solid #333; overflow: hidden; position: relative; }
-        .img-container img { position: absolute; }
-        .rarity-label { font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; }
-        .hp-badge { float: right; color: #ff4444; font-weight: bold; font-size: 20px; }
-        .card-desc { margin-top: 10px; font-size: 14px; color: #bbb; min-height: 20px; }
-
-        .navbar { 
-            position: fixed; bottom: 0; left: 0; width: 100%; background: #111; 
-            display: flex; justify-content: space-around; padding: 25px 0; 
-            border-top: 4px solid #222; z-index: 1000;
-        }
-        .nav-item { color: #888; background: none; border: none; font-size: 16px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
-        .nav-item.active { color: #ffcb05; transform: scale(1.1); }
-
-        .input-box { width: 85%; padding: 15px; border-radius: 12px; border: 2px solid #333; background: #1a1a1a; color: white; margin-bottom: 10px; text-align: center; font-size: 16px; }
-        .btn { background: #ffcb05; color: #3c5aa6; border: none; padding: 18px; border-radius: 15px; font-weight: bold; width: 90%; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        .shop-box { background: #1a1a1a; border: 2px solid #333; padding: 20px; border-radius: 20px; margin-bottom: 20px; width: 90%; margin-inline: auto; }
-        
-        #pfp-circle { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #ffcb05; margin: 20px auto; overflow: hidden; background: #222; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+        .deck-grid { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .big-card { background: #1a1a1a; border: 5px solid var(--common); border-radius: 20px; padding: 15px; width: 280px; position: relative; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; }
+        .locked { filter: grayscale(1) brightness(0.3); }
+        .img-container { width: 100%; height: 200px; border-radius: 12px; background: #111; border: 1px solid #333; overflow: hidden; position: relative; touch-action: none; }
+        .img-container img { position: absolute; transform-origin: 0 0; }
+        .rarity-label { font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        .hp-badge { float: right; color: #ff4444; font-weight: bold; font-size: 18px; }
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 20px 0; border-top: 3px solid #222; z-index: 1000; }
+        .nav-item { color: #666; background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .nav-item.active { color: #ffcb05; }
+        .input-box { width: 85%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #1a1a1a; color: white; margin-bottom: 8px; font-size: 16px; }
+        .btn { background: #ffcb05; color: #111; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 90%; cursor: pointer; margin-top: 10px; }
+        .shop-box { background: #1a1a1a; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #333; }
+        #pfp-circle { width: 100px; height: 100px; border-radius: 50%; border: 3px solid #ffcb05; margin: 20px auto; overflow: hidden; background: #222; display: flex; align-items: center; justify-content: center; }
         #pfp-circle img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
 
-    <div id="loginPage" class="page">
-        <div style="color: #ffcb05; font-size: 40px; font-weight: 800; margin: 50px 0;">Ipari 1v1</div>
-        <input type="text" id="uName" class="input-box" placeholder="Felhasználónév">
-        <input type="password" id="uPass" class="input-box" placeholder="Jelszó">
-        <button class="btn" onclick="auth()">BELÉPÉS</button>
-    </div>
+<div id="loginPage" class="page">
+    <h1 style="color:#ffcb05; margin-top:50px;">Ipari 1v1</h1>
+    <input type="text" id="uName" class="input-box" placeholder="Felhasználónév">
+    <input type="password" id="uPass" class="input-box" placeholder="Jelszó">
+    <button class="btn" onclick="auth()">BELÉPÉS</button>
+</div>
 
-    <div id="deckPage" class="page hidden">
-        <h2 style="color:#ffcb05">🎒 Paklid (<span id="c1">0</span> 🪙)</h2>
-        <div id="deckList" class="deck-grid"></div>
-    </div>
+<div id="deckPage" class="page hidden">
+    <h2 style="color:#ffcb05">Saját Paklid (<span class="money-val">0</span> 🪙)</h2>
+    <div id="deckList" class="deck-grid"></div>
+</div>
 
-    <div id="albumPage" class="page hidden">
-        <h2 style="color:#ffcb05">📖 Album</h2>
-        <div id="albumList" class="deck-grid"></div>
-    </div>
+<div id="albumPage" class="page hidden">
+    <h2 style="color:#ffcb05">Album</h2>
+    <div id="albumList" class="deck-grid"></div>
+</div>
 
-    <div id="shopPage" class="page hidden">
-        <h2 style="color:#ffcb05">🛒 Bolt (<span id="c2">0</span> 🪙)</h2>
-        <div class="shop-box">
-            <h3>🎁 Napi 200</h3>
-            <button class="btn" id="dailyBtn" onclick="claimDaily()">Beszedés</button>
-        </div>
-        <div class="shop-box">
-            <h3>📈 Sorozat</h3>
-            <p id="stext">Következő: 100 🪙</p>
-            <button class="btn" id="streakBtn" onclick="claimStreak()">Beszedés</button>
-        </div>
-        <div class="shop-box">
-            <h3>📦 Pack</h3>
-            <button class="btn" style="background:#3498db; color:white;" onclick="openPack()">Nyitás (150 🪙)</button>
-        </div>
-    </div>
+<div id="shopPage" class="page hidden">
+    <h2 style="color:#ffcb05">Bolt (<span class="money-val">0</span> 🪙)</h2>
+    <div class="shop-box"><h3>Napi 200</h3><button class="btn" onclick="claimDaily()">Beszedés</button></div>
+    <div class="shop-box"><h3>Sorozat</h3><p id="stext">1. nap: 100 🪙</p><button class="btn" onclick="claimStreak()">Beszedés</button></div>
+    <div class="shop-box"><h3>Csomag</h3><button class="btn" style="background:#3498db; color:white;" onclick="openPack()">Nyitás (150 🪙)</button></div>
+</div>
 
-    <div id="editorPage" class="page hidden">
-        <h2 style="color:#ffcb05">🎨 Készítő</h2>
-        <div class="big-card" id="preview" style="margin: 0 auto;">
-            <div class="rarity-label" id="pRare">Common</div>
-            <div class="hp-badge" id="pHPText">HP 0</div>
-            <div id="pNameText" style="font-weight:bold; font-size: 20px; margin-bottom:10px;">Név...</div>
-            <div class="img-container" id="cropBox" style="cursor: move; touch-action: none;">
-                <img id="eImg" style="display:none; top:0; left:0;">
-                <span id="plus" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#555;">➕ KÉP</span>
-            </div>
-            <div class="card-desc" id="pDescText">Leírás...</div>
+<div id="editorPage" class="page hidden">
+    <h2 style="color:#ffcb05">Készítő</h2>
+    <div class="big-card" id="preview" style="margin:0 auto;">
+        <div class="rarity-label" id="pRare">Common</div>
+        <div class="hp-badge" id="pHPText">HP 0</div>
+        <div id="pNameText" style="font-weight:bold; font-size: 18px; margin-bottom:8px;">Név...</div>
+        <div class="img-container" id="cropBox">
+            <img id="eImg" style="display:none;">
+            <span id="plus" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#555;">➕ KÉP</span>
         </div>
-        <input type="file" id="fileIn" class="hidden" onchange="loadImg(this, 'card')">
-        <div style="margin-top:15px; width:90%; margin-inline:auto;">
-            <label style="font-size:12px; color:#888;">Nagyítás:</label>
-            <input type="range" id="zoom" min="0.1" max="3" step="0.01" value="1" style="width:100%" oninput="apply()">
-            <input type="text" id="iName" class="input-box" placeholder="Név" oninput="sync()">
-            <input type="number" id="iHP" class="input-box" placeholder="HP" oninput="sync()">
-            <input type="text" id="iDesc" class="input-box" placeholder="Leírás" oninput="sync()">
-            <select id="iRare" class="input-box" onchange="sync()">
-                <option value="Common">Common</option><option value="Uncommon">Uncommon</option>
-                <option value="Rare">Rare</option><option value="Epic">Epic</option><option value="Legendary">Legendary</option>
-            </select>
-            <button class="btn" onclick="saveCard()">LÉTREHOZÁS (50 🪙)</button>
-        </div>
+        <div class="card-desc" id="pDescText">Leírás...</div>
     </div>
-
-    <div id="profilePage" class="page hidden">
-        <h2 style="color:#ffcb05">👤 Profil</h2>
-        <div id="pfp-circle" onclick="document.getElementById('pfpIn').click()">
-            <img id="pfpImg" src="" class="hidden">
-            <span id="pfpPlus">➕</span>
-        </div>
-        <input type="file" id="pfpIn" class="hidden" onchange="loadImg(this, 'pfp')">
-        <div id="pNameDisp" style="font-size:28px; font-weight:bold; margin-bottom:20px;"></div>
-        <button class="btn" style="background:#ff4444; color:white;" onclick="location.reload()">KIJELENTKEZÉS</button>
+    <input type="file" id="fileIn" class="hidden" onchange="loadImg(this, 'card')">
+    <div style="margin-top:15px;">
+        <input type="text" id="iName" class="input-box" placeholder="Név" oninput="sync()">
+        <input type="number" id="iHP" class="input-box" placeholder="HP" oninput="sync()">
+        <input type="text" id="iDesc" class="input-box" placeholder="Leírás" oninput="sync()">
+        <select id="iRare" class="input-box" onchange="sync()">
+            <option value="Common">Common</option><option value="Uncommon">Uncommon</option>
+            <option value="Rare">Rare</option><option value="Epic">Epic</option><option value="Legendary">Legendary</option>
+        </select>
+        <button class="btn" onclick="saveCard()">LÉTREHOZÁS (50 🪙)</button>
     </div>
+</div>
 
-    <nav class="navbar hidden" id="menu">
-        <button class="nav-item active" onclick="tab('deckPage', this)">🎒 Pakli</button>
-        <button class="nav-item" onclick="tab('albumPage', this)">📖 Album</button>
-        <button class="nav-item" onclick="tab('shopPage', this)">🛒 Bolt</button>
-        <button class="nav-item" onclick="tab('editorPage', this)">🎨 Készítő</button>
-        <button class="nav-item" onclick="tab('profilePage', this)">👤 Profil</button>
-    </nav>
+<div id="profilePage" class="page hidden">
+    <h2 style="color:#ffcb05">Profil</h2>
+    <div id="pfp-circle" onclick="document.getElementById('pfpIn').click()">
+        <img id="pfpImg" class="hidden"><span id="pfpPlus">➕</span>
+    </div>
+    <input type="file" id="pfpIn" class="hidden" onchange="loadImg(this, 'pfp')">
+    <h3 id="pNameDisp"></h3>
+    <button class="btn" style="background:#ff4444; color:white;" onclick="location.reload()">KIJELENTKEZÉS</button>
+</div>
+
+<nav class="navbar hidden" id="menu">
+    <button class="nav-item active" onclick="tab('deckPage', this)">🎒 Pakli</button>
+    <button class="nav-item" onclick="tab('albumPage', this)">📖 Album</button>
+    <button class="nav-item" onclick="tab('shopPage', this)">🛒 Bolt</button>
+    <button class="nav-item" onclick="tab('editorPage', this)">🎨 Készítő</button>
+    <button class="nav-item" onclick="tab('profilePage', this)">👤 Profil</button>
+</nav>
 
 <script>
-    let player = null, tempImg = "", imgX = 0, imgY = 0, isDragging = false, startX, startY;
-    const G_KEY = "global_cards_v8";
-
-    function getG() { return JSON.parse(localStorage.getItem(G_KEY)) || []; }
+    let player, gCards = [], tempImg = "";
+    let scale = 1, posX = 0, posY = 0, lastDist = 0, startX = 0, startY = 0;
+    const G_KEY = "global_cards_v9";
 
     function auth() {
         const u = document.getElementById('uName').value.trim().toLowerCase();
         const p = document.getElementById('uPass').value;
         if(!u || !p) return;
-        let d = JSON.parse(localStorage.getItem('u_' + u));
-        player = d && d.password === p ? d : { username: u, password: p, money: 500, deck: [], pfp: "", ld: 0, ls: 0, sD: 0 };
-        if(d && d.password !== p) return alert("Hibás jelszó!");
+        let d = JSON.parse(localStorage.getItem('u_'+u));
+        player = (d && d.password === p) ? d : { username: u, password: p, money: 500, deck: [], pfp: "", ld: 0, ls: 0, sD: 0 };
+        if(d && d.password !== p) return alert("Rossz jelszó!");
         document.getElementById('loginPage').classList.add('hidden');
         document.getElementById('menu').classList.remove('hidden');
         if(player.pfp) { document.getElementById('pfpImg').src = player.pfp; document.getElementById('pfpImg').classList.remove('hidden'); document.getElementById('pfpPlus').classList.add('hidden'); }
@@ -144,73 +114,67 @@
     }
 
     const cropBox = document.getElementById('cropBox'), eImg = document.getElementById('eImg');
-    cropBox.onpointerdown = (e) => { if(eImg.style.display==='none') return document.getElementById('fileIn').click(); isDragging = true; startX = e.clientX - imgX; startY = e.clientY - imgY; cropBox.setPointerCapture(e.pointerId); };
-    cropBox.onpointermove = (e) => { if(isDragging) { imgX = e.clientX - startX; imgY = e.clientY - startY; apply(); } };
-    cropBox.onpointerup = () => isDragging = false;
-    function apply() { eImg.style.transform = `translate(${imgX}px, ${imgY}px) scale(${document.getElementById('zoom').value})`; }
+
+    cropBox.addEventListener('touchstart', e => {
+        if(eImg.style.display==='none') return document.getElementById('fileIn').click();
+        if(e.touches.length === 2) lastDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+        else { startX = e.touches[0].pageX - posX; startY = e.touches[0].pageY - posY; }
+    });
+
+    cropBox.addEventListener('touchmove', e => {
+        e.preventDefault();
+        if(e.touches.length === 2) {
+            let dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+            scale *= dist / lastDist; lastDist = dist;
+        } else { posX = e.touches[0].pageX - startX; posY = e.touches[0].pageY - startY; }
+        eImg.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    });
 
     function loadImg(input, type) {
         const r = new FileReader();
         r.onload = (e) => {
-            if(type==='card') { tempImg = e.target.result; eImg.src = tempImg; eImg.style.display="block"; document.getElementById('plus').style.display="none"; imgX=0; imgY=0; apply(); }
+            if(type==='card') { eImg.src = e.target.result; eImg.style.display="block"; document.getElementById('plus').style.display="none"; scale=1; posX=0; posY=0; eImg.style.transform="none"; }
             else { player.pfp = e.target.result; document.getElementById('pfpImg').src=player.pfp; document.getElementById('pfpImg').classList.remove('hidden'); document.getElementById('pfpPlus').classList.add('hidden'); save(); }
         };
         r.readAsDataURL(input.files);
+    }
+
+    function saveCard() {
+        if(player.money < 50 || eImg.style.display==='none') return alert("Pénz vagy kép hiányzik!");
+        const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
+        canvas.width = 280; canvas.height = 200;
+        ctx.translate(posX, posY); ctx.scale(scale, scale);
+        ctx.drawImage(eImg, 0, 0);
+        const card = { id: Date.now(), name: document.getElementById('iName').value, hp: document.getElementById('iHP').value, desc: document.getElementById('iDesc').value, rare: document.getElementById('iRare').value, img: canvas.toDataURL('image/jpeg', 0.6) };
+        let g = JSON.parse(localStorage.getItem(G_KEY)) || []; g.push(card); localStorage.setItem(G_KEY, JSON.stringify(g));
+        player.deck.push(card.id); player.money -= 50; save(); tab('deckPage');
     }
 
     function sync() {
         document.getElementById('pNameText').innerText = document.getElementById('iName').value || "Név...";
         document.getElementById('pHPText').innerText = "HP " + (document.getElementById('iHP').value || "0");
         document.getElementById('pDescText').innerText = document.getElementById('iDesc').value || "Leírás...";
-        let r = document.getElementById('iRare').value;
-        document.getElementById('preview').style.borderColor = `var(--${r.toLowerCase()})`;
-        document.getElementById('pRare').innerText = r;
+        document.getElementById('preview').style.borderColor = `var(--${document.getElementById('iRare').value.toLowerCase()})`;
     }
 
-    function saveCard() {
-        if(player.money < 50 || !tempImg) return alert("Hiba!");
-        const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
-        canvas.width = 300; canvas.height = 210;
-        ctx.translate(imgX, imgY); ctx.scale(document.getElementById('zoom').value, document.getElementById('zoom').value);
-        ctx.drawImage(eImg, 0, 0);
-        const card = { id: Date.now(), name: document.getElementById('iName').value, hp: document.getElementById('iHP').value, desc: document.getElementById('iDesc').value, rare: document.getElementById('iRare').value, img: canvas.toDataURL('image/jpeg', 0.7) };
-        let g = getG(); g.push(card); localStorage.setItem(G_KEY, JSON.stringify(g));
-        player.deck.push(card.id); player.money -= 50; save(); tab('deckPage');
-    }
-
-    function openPack() {
-        let g = getG(); if(!g.length || player.money < 150) return alert("Hiba!");
-        let c = g[Math.floor(Math.random()*g.length)];
-        player.money -= 150; if(!player.deck.includes(c.id)) player.deck.push(c.id);
-        save(); alert("Nyitva: " + c.name);
-    }
-
-    function claimDaily() {
-        if(Date.now() - player.ld < 86400000) return alert("Holnap!");
-        player.money += 200; player.ld = Date.now(); save();
-    }
-
-    function claimStreak() {
-        let n = Date.now(); if(n - player.ls < 86400000) return alert("Holnap!");
-        if(n - player.ls > 172800000) player.sD = 0;
-        player.sD = (player.sD % 7) + 1; player.money += (player.sD * 100); player.ls = n; save();
-    }
-
-    function save() { localStorage.setItem('u_' + player.username, JSON.stringify(player)); update(); }
+    function claimDaily() { if(Date.now()-player.ld < 86400000) return alert("Várj holnapig!"); player.money+=200; player.ld=Date.now(); save(); }
+    function claimStreak() { let n=Date.now(); if(n-player.ls < 86400000) return alert("Várj holnapig!"); if(n-player.ls > 172800000) player.sD=0; player.sD=(player.sD%7)+1; player.money+=(player.sD*100); player.ls=n; save(); }
+    function openPack() { let g=JSON.parse(localStorage.getItem(G_KEY))||[]; if(!g.length || player.money<150) return alert("Nincs elég pénz vagy kártya!"); let c=g[Math.floor(Math.random()*g.length)]; player.money-=150; if(!player.deck.includes(c.id)) player.deck.push(c.id); save(); alert("Kaptál: "+c.name); }
+    function save() { localStorage.setItem('u_'+player.username, JSON.stringify(player)); update(); }
 
     function update() {
-        document.getElementById('c1').innerText = player.money; document.getElementById('c2').innerText = player.money;
+        document.querySelectorAll('.money-val').forEach(el => el.innerText = player.money);
         document.getElementById('pNameDisp').innerText = player.username;
-        document.getElementById('stext').innerText = (player.sD % 7 + 1) + ". nap: " + ((player.sD % 7 + 1) * 100) + " 🪙";
-        const g = getG();
+        document.getElementById('stext').innerText = `${(player.sD%7+1)}. nap: ${(player.sD%7+1)*100} 🪙`;
+        const g = JSON.parse(localStorage.getItem(G_KEY)) || [];
         const draw = (el, own) => {
-            document.getElementById(el).innerHTML = "";
+            const container = document.getElementById(el); container.innerHTML = "";
             g.forEach(c => {
                 let has = player.deck.includes(c.id); if(own && !has) return;
                 let d = document.createElement('div'); d.className = `big-card ${!has?'locked':''}`;
                 d.style.borderColor = `var(--${c.rare.toLowerCase()})`;
-                d.innerHTML = `<div class="rarity-label">${c.rare}</div><div class="hp-badge">HP ${c.hp}</div><div style="font-weight:bold;font-size:20px;">${c.name}</div><div class="img-container"><img src="${c.img}" style="width:100%"></div><div class="card-desc">${c.desc}</div>`;
-                document.getElementById(el).appendChild(d);
+                d.innerHTML = `<div class="rarity-label">${c.rare}</div><div class="hp-badge">HP ${c.hp}</div><div style="font-weight:bold;font-size:18px;">${c.name}</div><div class="img-container"><img src="${c.img}" style="width:100%"></div><div class="card-desc">${c.desc}</div>`;
+                container.appendChild(d);
             });
         };
         draw('deckList', true); draw('albumList', false);
