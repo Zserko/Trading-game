@@ -3,138 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pokémon TCG Mobile</title>
+    <title>Pokémon TCG Social</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; margin: 0; padding-bottom: 80px; }
+        body { font-family: sans-serif; background: #121212; color: white; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
         .hidden { display: none !important; }
         .page { padding: 15px; text-align: center; min-height: 100vh; }
         
+        /* KÁRTYA MEGJELENÉS */
         .deck-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 10px; }
-        @media (min-width: 600px) { .deck-grid { grid-template-columns: repeat(4, 1fr); } }
-
-        /* KIS KÁRTYA A PAKLIBAN/SHOPBAN */
         .mini-card { 
             background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); 
-            border: 3px solid #ffde00; 
-            border-radius: 12px; 
-            color: black; 
-            padding: 8px; 
-            font-size: 11px; 
-            position: relative; 
-            text-align: left; 
-            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-            aspect-ratio: 2.5 / 3.8; 
-            display: flex;
-            flex-direction: column;
+            border: 3px solid #ffde00; border-radius: 12px; color: black; padding: 8px; 
+            font-size: 11px; position: relative; text-align: left; 
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4); aspect-ratio: 2.5 / 3.8; 
+            display: flex; flex-direction: column; cursor: pointer;
         }
-        .mini-card img { width: 100%; height: 50%; object-fit: cover; border-radius: 6px; border: 1px solid rgba(0,0,0,0.2); background: white; }
-        .card-info { flex-grow: 1; padding-top: 5px; overflow: hidden; }
-        .card-adv { font-style: italic; color: #444; font-size: 10px; margin-top: 2px; display: block; }
-        .del-btn { background: #ff4444; color: white; border: none; font-size: 10px; padding: 5px; border-radius: 5px; width: 100%; font-weight: bold; cursor: pointer; margin-top: auto; }
-        .buy-btn { background: #2ecc71; color: white; border: none; font-size: 10px; padding: 5px; border-radius: 5px; width: 100%; font-weight: bold; margin-top: auto; }
+        .mini-card img { width: 100%; height: 50%; object-fit: cover; border-radius: 6px; background: white; }
 
-        /* --- VIZUÁLIS KÁRTYASZERKESZTŐ DESIGN --- */
-        .visual-editor {
-            background: linear-gradient(to bottom, #e0e0e0, #a0a0a0);
-            border: 12px solid #fcd33b;
-            border-radius: 15px;
-            width: 100%;
-            max-width: 340px;
-            aspect-ratio: 2.5 / 3.5;
-            margin: 0 auto;
-            position: relative;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-            box-sizing: border-box;
-            color: black;
-        }
-        .ve-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #888; padding-bottom: 5px; margin-bottom: 10px; }
-        .ve-field { position: relative; cursor: pointer; background: rgba(255,255,255,0.4); padding: 5px 10px; border-radius: 5px; font-weight: bold; }
-        .ve-image-box {
-            background: white;
-            height: 45%;
-            border: 4px solid #b0b0b0;
-            position: relative;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
-        }
-        .ve-image-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .ve-body { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; cursor: pointer; margin-top: 10px; background: rgba(255,255,255,0.2); border-radius: 8px;}
-        
-        /* Lebegő Ikonok (Ceruza és Plusz) */
-        .edit-icon {
-            background: white;
-            border: 2px solid black;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            font-size: 14px;
-            z-index: 10;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            top: -10px;
-            right: -10px;
-        }
-        .ve-image-box .edit-icon { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; font-size: 20px; }
+        /* MODAL / POPUP */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; justify-content: center; align-items: center; }
+        .modal-content { background: #1e1e1e; padding: 20px; border-radius: 20px; width: 85%; max-width: 400px; text-align: center; border: 2px solid #333; }
 
-        .ui-box { background: #1e1e1e; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #333; }
-        input.classic { width: 90%; padding: 12px; margin: 5px 0; border-radius: 10px; border: none; background: #2a2a2a; color: white; font-size: 16px; }
-        .btn { background: #ffcb05; color: #3c5aa6; border: 2px solid #3c5aa6; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 18px; margin-top: 15px; }
+        /* PROFIL & BARÁTOK */
+        .profile-pic { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #ffcb05; margin-bottom: 10px; }
+        .friend-item { background: #2a2a2a; padding: 10px; border-radius: 10px; margin: 5px 0; display: flex; justify-content: space-between; align-items: center; }
 
+        /* GOMBOK */
+        .btn { background: #ffcb05; color: #3c5aa6; border: 2px solid #3c5aa6; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
+        .btn-red { background: #ff4444; color: white; border: none; }
+        .btn-blue { background: #3498db; color: white; border: none; }
+
+        /* NAVBAR */
         .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px 0; border-top: 2px solid #333; z-index: 1000; }
-        .nav-item { color: #888; font-size: 12px; background: none; border: none; text-align: center; cursor: pointer; }
+        .nav-item { color: #888; font-size: 10px; background: none; border: none; text-align: center; cursor: pointer; }
         .nav-item.active { color: #ffcb05; font-weight: bold; }
+
+        /* VIZUÁLIS SZERKESZTŐ (Maradt a régi) */
+        .visual-editor { background: linear-gradient(to bottom, #e0e0e0, #a0a0a0); border: 10px solid #fcd33b; border-radius: 15px; width: 100%; max-width: 300px; aspect-ratio: 2.5/3.5; margin: 0 auto; position: relative; color: black; padding: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
+    <div id="cardModal" class="modal hidden">
+        <div class="modal-content" id="modalData"></div>
+    </div>
+
     <div id="loginPage" class="page">
-        <h1 style="color:#ffcb05; margin-top: 50px;">POKÉMON LOGIN</h1>
-        <input type="text" id="uName" class="classic" placeholder="Felhasználónév">
-        <input type="password" id="uPass" class="classic" placeholder="Jelszó">
+        <h1 style="color:#ffcb05;">POKÉMON LOGIN</h1>
+        <input type="text" id="uName" placeholder="Felhasználónév" style="width:80%; padding:10px; margin:5px;">
+        <input type="password" id="uPass" placeholder="Jelszó" style="width:80%; padding:10px; margin:5px;">
         <button class="btn" onclick="auth()">BELÉPÉS</button>
     </div>
 
     <div id="editorPage" class="page hidden">
-        <h3>🎨 Kártya Készítő</h3>
-        
         <div class="visual-editor">
-            <div class="ve-header">
-                <div class="ve-field" onclick="askData('inName', 'Név', 'dispName')">
-                    <div class="edit-icon">✏️</div>
-                    <span id="dispName">Pokémon Neve</span>
-                </div>
-                <div class="ve-field" onclick="askData('inHP', 'Életerő (HP)', 'dispHP')">
-                    <div class="edit-icon">✏️</div>
-                    HP <span id="dispHP">0</span>
-                </div>
+            <div onclick="askData('inName', 'Név', 'dispName')">✏️ <span id="dispName">Név</span></div>
+            <div onclick="askData('inHP', 'HP', 'dispHP')">✏️ HP <span id="dispHP">0</span></div>
+            <div style="height:50%; background:white; margin:10px 0;" onclick="document.getElementById('fileIn').click()">
+                <img id="dispImg" style="width:100%; height:100%; object-fit:cover; display:none;">
+                <span id="imgPlaceholder">➕ KÉP</span>
             </div>
-
-            <div class="ve-image-box" onclick="document.getElementById('fileIn').click()">
-                <div class="edit-icon" id="imgIcon">✏️</div>
-                <img id="dispImg" src="">
-            </div>
-
-            <div class="ve-body" onclick="askData('inAdv', 'Képesség vagy Előny', 'dispAdv')">
-                <div class="edit-icon" style="top: -15px; right: 50%; transform: translateX(50%);">➕</div>
-                <div id="dispAdv" style="padding: 15px; text-align: center; font-style: italic;">Érintsd meg képesség hozzáadásához...</div>
-            </div>
-
-            <input type="hidden" id="inName" value="">
-            <input type="hidden" id="inHP" value="">
-            <input type="hidden" id="inAdv" value="">
-            <input type="file" id="fileIn" class="hidden" accept="image/*" onchange="loadImg(this)">
+            <div onclick="askData('inAdv', 'Képesség', 'dispAdv')">✏️ <span id="dispAdv">Képesség...</span></div>
+            <input type="hidden" id="inName"><input type="hidden" id="inHP"><input type="hidden" id="inAdv">
+            <input type="file" id="fileIn" class="hidden" onchange="loadImg(this)">
         </div>
-
         <button class="btn" onclick="save()">MENTÉS (50 🪙)</button>
     </div>
 
@@ -143,30 +75,46 @@
         <div id="deckList" class="deck-grid"></div>
     </div>
 
-    <div id="shopPage" class="page hidden">
-        <h3>🛒 SHOP</h3>
-        <div class="ui-box">
-            <h4>📅 Napi Ajándék</h4>
-            <button id="dailyBtn" class="btn" onclick="claimDaily()">200 🪙 ÁTVÉTELE</button>
+    <div id="friendsPage" class="page hidden">
+        <h3>👥 BARÁTOK</h3>
+        <button class="btn btn-blue" onclick="inviteFriend()">➕ MEGHÍVÓ KÓD MÁSOLÁSA</button>
+        <button class="btn" onclick="addFriend()">📥 BARÁT HOZZÁADÁSA KÓDDAL</button>
+        <div id="friendsList" style="margin-top:20px;"></div>
+    </div>
+
+    <div id="profilePage" class="page hidden">
+        <h3>👤 PROFIL</h3>
+        <img id="profPicDisp" class="profile-pic" src="https://via.placeholder.com/100" onclick="document.getElementById('profFile').click()">
+        <input type="file" id="profFile" class="hidden" onchange="loadProfPic(this)">
+        <h2 id="profNameDisp">Felhasználó</h2>
+        <button class="btn" onclick="rename()">NÉV ÁTÍRÁSA</button>
+        <div class="btn-blue" style="padding:15px; border-radius:10px; margin-top:20px;">
+            Statisztika: <br> <span id="statCards">0</span> kártya | <span class="coins">0</span> 🪙
         </div>
-        <div id="shopList" class="deck-grid"></div>
     </div>
 
     <nav class="navbar hidden" id="menu">
         <button class="nav-item active" onclick="tab('editorPage', this)">🎨<br>Készítő</button>
         <button class="nav-item" onclick="tab('deckPage', this)">🎒<br>Pakli</button>
-        <button class="nav-item" onclick="tab('shopPage', this)">🛒<br>Shop</button>
+        <button class="nav-item" onclick="tab('friendsPage', this)">👥<br>Barátok</button>
+        <button class="nav-item" onclick="tab('profilePage', this)">👤<br>Profil</button>
     </nav>
 
 <script>
     let player = null;
     let tempPic = "";
-    
-    const shopItems = [
-        { name: "Pikachu", hp: 60, adv: "Villámcsapás", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png", price: 200 },
-        { name: "Charizard", hp: 120, adv: "Tűzlabda", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png", price: 500 },
-        { name: "Mewtwo", hp: 150, adv: "Pszicho-hullám", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png", price: 800 }
-    ];
+
+    function auth() {
+        const u = document.getElementById('uName').value.trim().toLowerCase();
+        const p = document.getElementById('uPass').value;
+        if(!u) return;
+        let data = JSON.parse(localStorage.getItem('pk_v3_' + u));
+        player = data || { username: u, password: p, money: 500, deck: [], friends: [], pPic: "" };
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('menu').classList.remove('hidden');
+        updateUI();
+        tab('deckPage', document.querySelectorAll('.nav-item')[1]);
+    }
 
     function tab(id, b) {
         document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
@@ -174,126 +122,127 @@
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         if(b) b.classList.add('active');
         if(id === 'deckPage') renderDeck();
-        if(id === 'shopPage') renderShop();
+        if(id === 'friendsPage') renderFriends();
+        if(id === 'profilePage') updateUI();
     }
 
-    function auth() {
-        const u = document.getElementById('uName').value.trim().toLowerCase();
-        const p = document.getElementById('uPass').value;
-        if(!u || !p) return alert("Adj meg nevet és jelszót!");
-        let data = JSON.parse(localStorage.getItem('pk_save_' + u));
-        if (data && data.password !== p) return alert("Hibás jelszó!");
-        player = data || { username: u, password: p, money: 500, deck: [], lastDaily: "" };
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('menu').classList.remove('hidden');
-        updateCoins();
-        tab('editorPage', document.querySelectorAll('.nav-item')[0]);
+    /* KÁRTYA INTERAKCIÓK */
+    function openCard(i) {
+        const c = player.deck[i];
+        const modal = document.getElementById('cardModal');
+        const content = document.getElementById('modalData');
+        modal.classList.remove('hidden');
+        content.innerHTML = `
+            <img src="${c.img}" style="width:100%; border-radius:10px;">
+            <h2>${c.name}</h2>
+            <p>HP: ${c.hp} | ${c.adv}</p>
+            <button class="btn btn-blue" onclick="upgradeCard(${i})">UPGRADE (+100HP) - 150🪙</button>
+            <button class="btn btn-red" onclick="quickSell(${i})">QUICKSELL (+75🪙)</button>
+            <button class="btn" onclick="document.getElementById('cardModal').classList.add('hidden')">BEZÁRÁS</button>
+        `;
     }
 
-    // ÚJ: Vizuális adatbekérés popup ablakkal
-    function askData(inputId, promptText, displayId) {
-        let currentVal = document.getElementById(inputId).value;
-        let answer = prompt("Add meg a következőt: " + promptText, currentVal);
-        if (answer !== null && answer.trim() !== "") {
-            document.getElementById(inputId).value = answer;
-            document.getElementById(displayId).innerText = answer;
+    function upgradeCard(i) {
+        if(player.money < 150) return alert("Nincs elég pénzed!");
+        player.money -= 150;
+        player.deck[i].hp = parseInt(player.deck[i].hp) + 100;
+        sync(); openCard(i); updateUI();
+    }
+
+    function quickSell(i) {
+        player.money += 75;
+        player.deck.splice(i, 1);
+        document.getElementById('cardModal').classList.add('hidden');
+        sync(); renderDeck(); updateUI();
+    }
+
+    /* PROFIL ÉS BARÁTOK */
+    function rename() {
+        let n = prompt("Új név:");
+        if(n) { player.username = n; sync(); updateUI(); }
+    }
+
+    function inviteFriend() {
+        const code = btoa(JSON.stringify({n: player.username, d: player.deck.slice(0,5), p: player.pPic}));
+        navigator.clipboard.writeText(code);
+        alert("Meghívó kód másolva! Küldd el egy barátodnak.");
+    }
+
+    function addFriend() {
+        let code = prompt("Másold be a barátod kódját:");
+        if(code) {
+            try {
+                let fData = JSON.parse(atob(code));
+                player.friends.push(fData);
+                sync(); renderFriends();
+            } catch(e) { alert("Érvénytelen kód!"); }
         }
     }
 
-    // Módosított kép betöltés
+    function renderFriends() {
+        const list = document.getElementById('friendsList');
+        list.innerHTML = player.friends.length ? "" : "Még nincsenek barátaid.";
+        player.friends.forEach((f, i) => {
+            list.innerHTML += `
+                <div class="friend-item">
+                    <span>${f.n}</span>
+                    <button class="btn btn-blue" style="width:auto; margin:0;" onclick="viewFriendDeck(${i})">LAPOK</button>
+                </div>`;
+        });
+    }
+
+    function viewFriendDeck(i) {
+        const f = player.friends[i];
+        alert(f.n + " legjobb lapjai: " + f.d.map(c => c.name).join(", "));
+    }
+
+    /* ALAP FUNKCIÓK */
+    function askData(id, txt, disp) {
+        let a = prompt(txt);
+        if(a) { document.getElementById(id).value = a; document.getElementById(disp).innerText = a; }
+    }
+
     function loadImg(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => { 
-                tempPic = e.target.result; 
-                document.getElementById('dispImg').src = tempPic;
-                document.getElementById('dispImg').style.display = 'block';
-                document.getElementById('imgIcon').style.display = 'none'; // Eltünteti a ceruzát
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
+        const reader = new FileReader();
+        reader.onload = (e) => { 
+            tempPic = e.target.result; 
+            document.getElementById('dispImg').src = tempPic;
+            document.getElementById('dispImg').style.display = 'block';
+            document.getElementById('imgPlaceholder').style.display = 'none';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function loadProfPic(input) {
+        const reader = new FileReader();
+        reader.onload = (e) => { player.pPic = e.target.result; sync(); updateUI(); };
+        reader.readAsDataURL(input.files[0]);
     }
 
     function save() {
-        const nameVal = document.getElementById('inName').value;
-        const hpVal = document.getElementById('inHP').value;
-        const advVal = document.getElementById('inAdv').value;
-        
-        if(!nameVal) return alert("Kattints a Névre és adj meg egyet!");
-        if(!tempPic) return alert("Kattints a középső dobozra és tölts fel egy képet!");
-        if(player.money < 50) return alert("Nincs elég pénzed (50 🪙 kell)!");
-
+        if(!tempPic || !document.getElementById('inName').value) return alert("Hiányzó adatok!");
+        if(player.money < 50) return alert("Nincs pénzed!");
         player.money -= 50;
-        player.deck.push({ name: nameVal, hp: hpVal || 0, adv: advVal || "", img: tempPic });
-        
-        // Vizuális szerkesztő alaphelyzetbe állítása mentés után
-        document.getElementById('inName').value = ""; document.getElementById('dispName').innerText = "Pokémon Neve";
-        document.getElementById('inHP').value = ""; document.getElementById('dispHP').innerText = "0";
-        document.getElementById('inAdv').value = ""; document.getElementById('dispAdv').innerText = "Érintsd meg képesség hozzáadásához...";
-        tempPic = ""; 
-        document.getElementById('dispImg').style.display = 'none';
-        document.getElementById('imgIcon').style.display = 'flex';
-        
-        sync(); updateCoins(); alert("Gyönyörű kártya! Elmentve a Paklidba.");
+        player.deck.push({ name: document.getElementById('inName').value, hp: document.getElementById('inHP').value, adv: document.getElementById('inAdv').value, img: tempPic });
+        sync(); updateUI(); alert("Kész!");
     }
 
     function renderDeck() {
         const list = document.getElementById('deckList');
         list.innerHTML = "";
         player.deck.forEach((c, i) => {
-            list.innerHTML += `
-                <div class="mini-card">
-                    <img src="${c.img}">
-                    <div class="card-info">
-                        <b>${c.name}</b><br>
-                        <small>HP: ${c.hp}</small><br>
-                        <span class="card-adv">${c.adv}</span>
-                    </div>
-                    <button class="del-btn" onclick="removeCard(${i})">Törlés (+25🪙)</button>
-                </div>`;
+            list.innerHTML += `<div class="mini-card" onclick="openCard(${i})"><img src="${c.img}"><b>${c.name}</b><small>HP: ${c.hp}</small></div>`;
         });
     }
 
-    function removeCard(i) {
-        player.deck.splice(i, 1);
-        player.money += 25;
-        sync(); renderDeck(); updateCoins();
+    function updateUI() {
+        document.querySelectorAll('.coins').forEach(e => e.innerText = player.money);
+        document.getElementById('profNameDisp').innerText = player.username;
+        document.getElementById('statCards').innerText = player.deck.length;
+        if(player.pPic) document.getElementById('profPicDisp').src = player.pPic;
     }
 
-    function claimDaily() {
-        const today = new Date().toDateString();
-        if(player.lastDaily === today) return alert("Ma már átvetted!");
-        player.money += 200;
-        player.lastDaily = today;
-        sync(); updateCoins(); alert("200 🪙 megérkezett!");
-    }
-
-    function renderShop() {
-        const list = document.getElementById('shopList');
-        list.innerHTML = "";
-        shopItems.forEach(item => {
-            list.innerHTML += `
-                <div class="mini-card">
-                    <img src="${item.img}">
-                    <div class="card-info">
-                        <b>${item.name}</b><br>
-                        <span class="card-adv">${item.adv}</span><br>
-                        ${item.price} 🪙
-                    </div>
-                    <button class="buy-btn" onclick="buyItem('${item.name}', ${item.hp}, '${item.adv}', '${item.img}', ${item.price})">MEGVESZ</button>
-                </div>`;
-        });
-    }
-
-    function buyItem(name, hp, adv, img, price) {
-        if(player.money < price) return alert("Nincs elég pénzed!");
-        player.money -= price;
-        player.deck.push({ name, hp, adv, img });
-        sync(); updateCoins(); alert("Megvetted!");
-    }
-
-    function updateCoins() { document.querySelectorAll('.coins').forEach(e => e.innerText = player.money); }
-    function sync() { localStorage.setItem('pk_save_' + player.username, JSON.stringify(player)); }
+    function sync() { localStorage.setItem('pk_v3_' + player.username, JSON.stringify(player)); }
 </script>
 </body>
 </html>
