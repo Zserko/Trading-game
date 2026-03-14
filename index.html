@@ -1,153 +1,114 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ipari Royale 1v1</title>
+    <title>Ipari 1v1 - Classic Fix</title>
     <style>
-        :root {
-            --common: #b1b1b1; --uncommon: #55ee55; --rare: #55ccff; 
-            --epic: #ee55ff; --legendary: #ffff55; --royale-blue: #1e3799;
-            --royale-gold: #fbc531;
-        }
-        body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            background: radial-gradient(circle, #2f3640, #1e272e); 
-            color: white; margin: 0; padding-top: 70px; padding-bottom: 110px;
-            overflow-x: hidden; touch-action: pan-y;
-        }
+        :root { --common: #888; --uncommon: #2ecc71; --rare: #3498db; --epic: #9b59b6; --legendary: #f1c40f; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding-top: 70px; padding-bottom: 110px; overflow-x: hidden; }
         .hidden { display: none !important; }
-
-        /* CLASH ROYALE TOP BAR */
-        .top-bar { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
-            background: linear-gradient(to bottom, #4a69bd, #1e3799);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 2000; border-bottom: 4px solid var(--royale-gold);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-        .money-badge {
-            background: rgba(0,0,0,0.4); padding: 5px 20px; border-radius: 20px;
-            border: 2px solid var(--royale-gold); font-weight: 900; font-size: 18px;
-            color: var(--royale-gold);
-        }
-
-        /* 4 OSZLOPOS POKEMON/ROYALE RÁCS */
-        .card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; }
-        .mini-card { 
-            aspect-ratio: 2.5/3.8; background: #353b48; 
-            border: 2px solid var(--common); border-radius: 10px;
-            overflow: hidden; position: relative; transition: transform 0.1s;
-            box-shadow: 0 3px 0 rgba(0,0,0,0.3);
-        }
+        
+        .top-bar { position: fixed; top: 0; left: 0; width: 100%; background: #ffcb05; color: #111; padding: 12px 0; font-weight: 900; text-align: center; z-index: 2000; box-shadow: 0 2px 10px rgba(0,0,0,0.5); font-size: 18px; }
+        .page { padding: 20px; text-align: center; min-height: 100vh; box-sizing: border-box; }
+        
+        /* 4 OSZLOPOS RÁCS */
+        .card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 10px; }
+        .mini-card { aspect-ratio: 2.5 / 3.8; background: #1a1a1a; border: 2px solid var(--common); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
         .mini-card img { width: 100%; height: 50%; object-fit: cover; }
-        .mini-content { padding: 3px; font-size: 7.5px; font-weight: 800; line-height: 1.1; }
-        .mini-desc { font-size: 5.5px; color: #aaa; font-weight: normal; margin-top: 2px; }
+        .mini-content { padding: 4px; font-size: 8px; text-align: left; overflow: hidden; }
+        .mini-desc { font-size: 6px; color: #aaa; margin-top: 2px; line-height: 1.1; }
+
+        /* EDITOR KÁRTYA */
+        .big-card { background: #1a1a1a; border: 5px solid var(--common); border-radius: 20px; padding: 15px; width: 260px; aspect-ratio: 2.5/3.8; margin: 0 auto; text-align: left; position: relative; overflow: hidden; box-sizing: border-box; }
+        .img-container { width: 100%; height: 160px; border-radius: 10px; background: #111; overflow: hidden; position: relative; touch-action: none; }
+        .img-container img { position: absolute; transform-origin: center; display: block; width: 100%; }
+        .card-desc { margin-top: 10px; font-size: 13px; color: #bbb; line-height: 1.2; overflow: hidden; }
+
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 15px 0; border-top: 3px solid #222; z-index: 1000; }
+        .nav-item { color: #666; background: none; border: none; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .nav-item.active { color: #ffcb05; }
+
+        .input-box { width: 90%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #1a1a1a; color: white; margin-bottom: 10px; font-size: 16px; box-sizing: border-box; }
+        .btn { background: #ffcb05; color: #111; border: none; padding: 14px; border-radius: 10px; font-weight: bold; width: 90%; cursor: pointer; margin-top: 10px; font-size: 14px; }
+        .friend-item { background: #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; border: 1px solid #333; margin-inline: 10px; }
         .locked { filter: grayscale(1) brightness(0.3); }
 
-        /* EDITOR NAGY KÁRTYA */
-        .big-card { 
-            background: #2f3640; border: 6px solid var(--common); border-radius: 25px;
-            width: 260px; aspect-ratio: 2.5/3.8; margin: 0 auto; position: relative;
-            overflow: hidden; box-shadow: 0 15px 30px rgba(0,0,0,0.6); text-align: left;
-        }
-        .img-container { 
-            width: 90%; height: 160px; margin: 5% auto; border-radius: 15px;
-            background: #1e272e; overflow: hidden; position: relative; touch-action: none;
-        }
-        .img-container img { position: absolute; transform-origin: center; }
-
-        /* BUTTONS - ROYALE STYLE */
-        .btn {
-            background: linear-gradient(to bottom, #44bd32, #192f17);
-            color: white; border: none; border-radius: 12px;
-            padding: 12px; font-weight: 900; width: 90%; cursor: pointer;
-            text-transform: uppercase; font-size: 14px;
-            box-shadow: 0 4px 0 #132412; transition: 0.1s; margin-top: 10px;
-        }
-        .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #132412; }
-        .btn-blue { background: linear-gradient(to bottom, #0097e6, #005f91); box-shadow: 0 4px 0 #003d5c; }
-
-        /* NAVBAR */
-        .navbar { 
-            position: fixed; bottom: 0; width: 100%; background: #2f3640;
-            display: flex; justify-content: space-around; padding: 15px 0;
-            border-top: 4px solid #1e272e; z-index: 1000;
-        }
-        .nav-item { color: #dcdde1; background: none; border: none; font-weight: 900; font-size: 10px; text-transform: uppercase; }
-        .nav-item.active { color: var(--royale-gold); }
-
-        .input-box { width: 85%; padding: 12px; border-radius: 10px; border: 3px solid #1e272e; background: #353b48; color: white; margin-bottom: 8px; font-weight: bold; }
-        .friend-item { background: #353b48; padding: 12px; border-radius: 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 2px solid #1e272e; }
+        #pfp-circle { width: 100px; height: 100px; border-radius: 50%; border: 3px solid #ffcb05; margin: 20px auto; overflow: hidden; background: #222; display: flex; align-items: center; justify-content: center; }
+        #pfp-circle img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
 
-<div id="topBar" class="top-bar hidden">
-    <div class="money-badge"><span id="globalMoney">0</span> 🪙</div>
-</div>
+<div id="topBar" class="top-bar hidden">Pénz: <span id="globalMoney">0</span> 🪙</div>
 
-<div id="loginPage" class="page" style="padding-top: 50px;">
-    <h1 style="color:var(--royale-gold); text-shadow: 2px 2px #000; font-size: 36px;">IPARI ROYALE</h1>
-    <input type="text" id="uName" class="input-box" placeholder="FELHASZNÁLÓNÉV">
-    <input type="password" id="uPass" class="input-box" placeholder="JELSZÓ">
+<div id="loginPage" class="page">
+    <h1 style="color:#ffcb05; margin-top:50px;">Ipari 1v1</h1>
+    <input type="text" id="uName" class="input-box" placeholder="Felhasználónév">
+    <input type="password" id="uPass" class="input-box" placeholder="Jelszó">
     <button class="btn" onclick="auth()">BELÉPÉS</button>
 </div>
 
-<div id="deckPage" class="page hidden"><h2 style="color:var(--royale-gold)">PAKLI</h2><div id="deckList" class="card-grid"></div></div>
-<div id="albumPage" class="page hidden"><h2 style="color:var(--royale-gold)">ALBUM</h2><div id="albumList" class="card-grid"></div></div>
+<div id="deckPage" class="page hidden">
+    <h2 style="color:#ffcb05">Saját Paklid</h2>
+    <div id="deckList" class="card-grid"></div>
+</div>
+
+<div id="albumPage" class="page hidden">
+    <h2 style="color:#ffcb05">Világ Album</h2>
+    <div id="albumList" class="card-grid"></div>
+</div>
 
 <div id="friendsPage" class="page hidden">
-    <h2 style="color:var(--royale-gold)">BARÁTOK</h2>
-    <input type="text" id="friendID" class="input-box" placeholder="KÓD (PL: ABC-DEF)">
-    <button class="btn btn-blue" onclick="addFriend()">HOZZÁADÁS</button>
+    <h2 style="color:#ffcb05">Barátok</h2>
+    <button class="btn" style="background:#444; color:white; margin-bottom:20px;" onclick="copyID()">SAJÁT KÓD MÁSOLÁSA</button>
+    <input type="text" id="friendID" class="input-box" placeholder="Barát kódja (ABC-DEF)">
+    <button class="btn" onclick="addFriend()">HOZZÁADÁS</button>
     <div id="friendsList" style="margin-top: 20px;"></div>
 </div>
 
-<div id="friendView" class="page hidden">
-    <button class="btn btn-blue" style="width:auto; padding: 5px 20px;" onclick="tab('friendsPage')">⬅ VISSZA</button>
-    <div id="fProfileArea" style="margin-top:20px;"></div>
-    <div id="fCardList" class="card-grid"></div>
-</div>
-
 <div id="editorPage" class="page hidden">
-    <h2 style="color:var(--royale-gold)">KÉSZÍTŐ</h2>
+    <h2 style="color:#ffcb05">Készítő</h2>
     <div class="big-card" id="preview">
-        <div id="pHPText" style="position:absolute; right:15px; top:10px; font-weight:900; color:#ff4444; font-size:18px;">0</div>
-        <div id="pNameText" style="padding: 10px 15px 0 15px; font-weight:900; font-size:18px; color:var(--royale-gold);">NÉV...</div>
+        <div class="rarity-label" id="pRare" style="font-size:11px;">Common</div>
+        <div id="pHPText" style="float:right; color:#ff4444; font-weight:bold;">HP 0</div>
+        <div id="pNameText" style="font-weight:bold; font-size:18px; margin: 5px 0;">Név...</div>
         <div class="img-container" id="cropBox">
-            <img id="eImg" style="display:none; width:100%; top:0; left:0;">
-            <span id="plus" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%); color:#7f8c8d;">NINCS KÉP</span>
+            <img id="eImg" style="display:none; top:0; left:0;">
+            <span id="plus" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%); color:#444;">Nincs kép</span>
         </div>
-        <div id="pDescText" style="padding:0 15px; font-size:12px; color:#bdc3c7; line-height:1.2;">Leírás...</div>
-        <div id="pRare" style="position:absolute; bottom:10px; width:100%; text-align:center; font-weight:900; font-size:12px;">COMMON</div>
+        <div class="card-desc" id="pDescText">Leírás...</div>
     </div>
-    <button class="btn btn-blue" onclick="document.getElementById('fileIn').click()">KÉP KIVÁLASZTÁSA</button>
-    <input type="file" id="fileIn" class="hidden" accept="image/*" onchange="loadImg(this)">
-    <input type="text" id="iName" class="input-box" placeholder="NÉV" oninput="sync()">
-    <input type="number" id="iHP" class="input-box" placeholder="HP" oninput="sync()">
-    <input type="text" id="iDesc" class="input-box" placeholder="LEÍRÁS" oninput="sync()">
-    <select id="iRare" class="input-box" onchange="sync()">
-        <option value="Common">Common</option><option value="Uncommon">Uncommon</option><option value="Rare">Rare</option><option value="Epic">Epic</option><option value="Legendary">Legendary</option>
-    </select>
-    <button class="btn" onclick="saveCard()">MENTÉS (50 🪙)</button>
+    <button class="btn" style="background:#555; color:white;" onclick="document.getElementById('fileIn').click()">KÉP KIVÁLASZTÁSA</button>
+    <input type="file" id="fileIn" class="hidden" accept="image/*" onchange="loadImg(this, 'card')">
+    <div style="margin-top:20px;">
+        <input type="text" id="iName" class="input-box" placeholder="Kártya neve" oninput="sync()">
+        <input type="number" id="iHP" class="input-box" placeholder="HP" oninput="sync()">
+        <input type="text" id="iDesc" class="input-box" placeholder="Leírás" oninput="sync()">
+        <select id="iRare" class="input-box" onchange="sync()">
+            <option value="Common">Common</option><option value="Uncommon">Uncommon</option>
+            <option value="Rare">Rare</option><option value="Epic">Epic</option><option value="Legendary">Legendary</option>
+        </select>
+        <button class="btn" onclick="saveCard()">MENTÉS (50 🪙)</button>
+    </div>
 </div>
 
 <div id="shopPage" class="page hidden">
-    <h2 style="color:var(--royale-gold)">BOLT</h2>
-    <button class="btn" onclick="claimDaily()">NAPI 200 🪙</button>
-    <button class="btn btn-blue" onclick="openPack()">LÁDA NYITÁS (150 🪙)</button>
+    <h2 style="color:#ffcb05">Bolt</h2>
+    <button class="btn" onclick="claimDaily()">Napi 200 🪙</button>
+    <button class="btn" style="background:#3498db; color:white;" onclick="openPack()">Láda nyitás (150 🪙)</button>
 </div>
 
 <div id="profilePage" class="page hidden">
-    <h2 style="color:var(--royale-gold)">PROFIL</h2>
-    <div style="background:#353b48; padding:20px; border-radius:20px; border:4px solid var(--royale-gold);">
-        <h1 id="pNameDisp" style="margin:0;"></h1>
-        <p style="color:#bdc3c7;">KÓDOD:</p>
-        <h2 id="myID" style="letter-spacing:2px; color:white;"></h2>
-        <button class="btn btn-blue" style="width:auto; padding:8px 20px;" onclick="copyID()">KÓD MÁSOLÁSA</button>
+    <h2 style="color:#ffcb05">Profil</h2>
+    <div id="pfp-circle" onclick="document.getElementById('pfpIn').click()">
+        <img id="pfpImg" class="hidden">
+        <span id="pfpPlus">➕ Kép</span>
     </div>
-    <button class="btn" style="background:linear-gradient(#e74c3c, #c0392b); margin-top:30px;" onclick="location.reload()">KIJELENTKEZÉS</button>
+    <input type="file" id="pfpIn" class="hidden" onchange="loadImg(this, 'pfp')">
+    <h2 id="pNameDisp"></h2>
+    <p id="pIDDisp" style="color:#888;"></p>
+    <button class="btn" style="background:#ff4444; color:white;" onclick="location.reload()">KIJELENTKEZÉS</button>
 </div>
 
 <nav class="navbar hidden" id="menu">
@@ -161,9 +122,9 @@
 
 <script>
     let player, posX=0, posY=0, startX=0, startY=0, isDragging=false;
-    const G_KEY = "global_cards_v15";
+    const G_KEY = "global_cards_v16";
 
-    function generateUID() {
+    function genUID() {
         const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
         const r = () => Array.from({length:3}, () => c[Math.floor(Math.random()*c.length)]).join('');
         return r() + "-" + r();
@@ -174,7 +135,7 @@
         const p = document.getElementById('uPass').value;
         if(!u || !p) return;
         let d = JSON.parse(localStorage.getItem('u_'+u));
-        player = (d && d.password === p) ? d : { username: u, password: p, money: 500, deck: [], uid: generateUID(), ld: 0, friends: [] };
+        player = (d && d.password === p) ? d : { username: u, password: p, money: 500, deck: [], uid: genUID(), ld: 0, friends: [], pfp: "" };
         localStorage.setItem('uid_'+player.uid, u);
         document.getElementById('loginPage').classList.add('hidden');
         document.getElementById('topBar').classList.remove('hidden');
@@ -197,14 +158,22 @@
     window.addEventListener('mousemove', moveH);
     window.addEventListener('mouseup', () => isDragging=false);
 
-    function loadImg(i) {
+    function loadImg(i, type) {
         const r = new FileReader();
-        r.onload = (e) => { eImg.src = e.target.result; eImg.style.display="block"; document.getElementById('plus').style.display="none"; posX=0; posY=0; eImg.style.left="0px"; eImg.style.top="0px"; };
-        r.readAsDataURL(i.files);
+        r.onload = (e) => {
+            if(type==='card') { 
+                eImg.src = e.target.result; eImg.style.display="block"; 
+                document.getElementById('plus').style.display="none"; 
+                posX=0; posY=0; eImg.style.left="0px"; eImg.style.top="0px";
+            } else { 
+                player.pfp = e.target.result; save(); 
+            }
+        };
+        r.readAsDataURL(i.files[0]);
     }
 
     function saveCard() {
-        if(player.money < 50 || eImg.style.display==='none') return alert("HIBA!");
+        if(player.money < 50 || eImg.style.display==='none') return alert("Hiba!");
         const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
         canvas.width = 400; canvas.height = 250;
         const ratio = eImg.naturalWidth / eImg.width;
@@ -217,47 +186,39 @@
 
     function addFriend() {
         const id = document.getElementById('friendID').value.trim().toUpperCase();
-        if(!localStorage.getItem('uid_'+id) || id === player.uid) return alert("HIBA!");
-        if(!player.friends.includes(id)) { player.friends.push(id); save(); }
+        if(!localStorage.getItem('uid_'+id) || id === player.uid) return alert("Érvénytelen kód!");
+        if(!player.friends.includes(id)) { player.friends.push(id); save(); alert("Barát hozzáadva!"); }
         document.getElementById('friendID').value = "";
     }
 
-    function viewFriend(id) {
-        const fU = localStorage.getItem('uid_'+id);
-        const fD = JSON.parse(localStorage.getItem('u_'+fU));
-        tab('friendView');
-        document.getElementById('fProfileArea').innerHTML = `<h3>${fD.username}</h3><p>ID: ${id}</p><button class="btn" style="background:#e74c3c; width:120px;" onclick="removeFriend('${id}')">TÖRLÉS</button>`;
-        drawCards('fCardList', false, fD.deck);
-    }
-
-    function removeFriend(id) { player.friends = player.friends.filter(f => f !== id); save(); tab('friendsPage'); }
     function save() { localStorage.setItem('u_'+player.username, JSON.stringify(player)); update(); }
-
-    function drawCards(elId, album, filterList = null) {
-        const g = JSON.parse(localStorage.getItem(G_KEY)) || [];
-        const container = document.getElementById(elId); container.innerHTML = "";
-        g.forEach(c => {
-            const has = player.deck.includes(c.id);
-            if(!album && filterList && !filterList.includes(c.id)) return;
-            if(!album && !filterList && !has) return;
-            const d = document.createElement('div');
-            d.className = `mini-card ${(!has && album) ? 'locked' : ''}`;
-            d.style.borderColor = `var(--${c.rare.toLowerCase()})`;
-            d.innerHTML = `<img src="${c.img}"><div class="mini-content"><div>HP ${c.hp}</div><div>${c.name}</div><div class="mini-desc">${c.desc}</div></div>`;
-            container.appendChild(d);
-        });
-    }
 
     function update() {
         document.getElementById('globalMoney').innerText = player.money;
         document.getElementById('pNameDisp').innerText = player.username;
-        document.getElementById('myID').innerText = player.uid;
+        document.getElementById('pIDDisp').innerText = "Kódod: " + player.uid;
+        if(player.pfp) { document.getElementById('pfpImg').src = player.pfp; document.getElementById('pfpImg').classList.remove('hidden'); document.getElementById('pfpPlus').classList.add('hidden'); }
+        
         const fList = document.getElementById('friendsList'); fList.innerHTML = "";
         player.friends.forEach(fid => {
             const fU = localStorage.getItem('uid_'+fid);
-            fList.innerHTML += `<div class="friend-item" onclick="viewFriend('${fid}')"><span>${fU}</span><span>${fid} ➡</span></div>`;
+            fList.innerHTML += `<div class="friend-item"><span>${fU}</span><span style="color:#ffcb05">${fid}</span></div>`;
         });
-        drawCards('deckList', false); drawCards('albumList', true);
+
+        const draw = (elId, album) => {
+            const g = JSON.parse(localStorage.getItem(G_KEY)) || [];
+            const container = document.getElementById(elId); container.innerHTML = "";
+            g.forEach(c => {
+                const has = player.deck.includes(c.id);
+                if(!album && !has) return;
+                const d = document.createElement('div');
+                d.className = `mini-card ${(!has && album) ? 'locked' : ''}`;
+                d.style.borderColor = `var(--${c.rare.toLowerCase()})`;
+                d.innerHTML = `<img src="${c.img}"><div class="mini-content"><div style="font-weight:bold">HP ${c.hp} | ${c.name}</div><div class="mini-desc">${c.desc}</div></div>`;
+                container.appendChild(d);
+            });
+        };
+        draw('deckList', false); draw('albumList', true);
     }
 
     function tab(id, b) {
@@ -268,20 +229,19 @@
     }
 
     function sync() {
-        document.getElementById('pNameText').innerText = document.getElementById('iName').value.toUpperCase() || "NÉV...";
-        document.getElementById('pHPText').innerText = document.getElementById('iHP').value || 0;
+        document.getElementById('pNameText').innerText = document.getElementById('iName').value.toUpperCase() || "Név...";
+        document.getElementById('pHPText').innerText = "HP " + (document.getElementById('iHP').value || 0);
         document.getElementById('pDescText').innerText = document.getElementById('iDesc').value || "Leírás...";
-        document.getElementById('pRare').innerText = document.getElementById('iRare').value.toUpperCase();
         document.getElementById('preview').style.borderColor = `var(--${document.getElementById('iRare').value.toLowerCase()})`;
     }
-    function copyID() { navigator.clipboard.writeText(player.uid); alert("MÁSOLVA!"); }
-    function claimDaily() { if(Date.now()-player.ld < 86400000) return alert("VÁRJ!"); player.money+=200; player.ld=Date.now(); save(); }
+    function copyID() { navigator.clipboard.writeText(player.uid); alert("Kód másolva!"); }
+    function claimDaily() { if(Date.now()-player.ld < 86400000) return alert("Várj holnapig!"); player.money+=200; player.ld=Date.now(); save(); }
     function openPack() { 
         let g=JSON.parse(localStorage.getItem(G_KEY))||[]; 
-        if(!g.length || player.money<150) return alert("HIBA!");
+        if(!g.length || player.money<150) return alert("Hiba!");
         let c=g[Math.floor(Math.random()*g.length)];
         player.money-=150; if(!player.deck.includes(c.id)) player.deck.push(c.id);
-        save(); alert("NYITOTTÁL: " + c.name);
+        save(); alert("Kaptál: " + c.name);
     }
 </script>
 </body>
