@@ -9,52 +9,44 @@
         .hidden { display: none !important; }
         .page { padding: 15px; text-align: center; min-height: 100vh; }
         
-        /* JAVÍTOTT: POKÉMON KÁRTYA ALAKÚ RÁCS */
-        .deck-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 15px; 
-            padding: 10px; 
-        }
+        .deck-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 10px; }
         @media (min-width: 600px) { .deck-grid { grid-template-columns: repeat(4, 1fr); } }
 
-        /* JAVÍTOTT: TÉGLALAP ALAKÚ KÁRTYA DESIGN */
+        /* TÉGLALAP KÁRTYA */
         .mini-card { 
             background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); 
             border: 3px solid #ffde00; 
             border-radius: 12px; 
             color: black; 
             padding: 8px; 
-            font-size: 13px; 
+            font-size: 11px; 
             position: relative; 
             text-align: left; 
             box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-            /* Ez adja meg a klasszikus kártya arányt */
-            aspect-ratio: 2.5 / 3.5; 
+            aspect-ratio: 2.5 / 3.8; 
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
         }
 
         .mini-card img { 
             width: 100%; 
-            height: 55%; 
+            height: 50%; 
             object-fit: cover; 
             border-radius: 6px; 
             border: 1px solid rgba(0,0,0,0.2);
             background: white;
         }
 
-        .card-info { flex-grow: 1; padding-top: 5px; }
-        .del-btn { background: #ff4444; color: white; border: none; font-size: 10px; padding: 5px; border-radius: 5px; width: 100%; font-weight: bold; cursor: pointer; }
-        .buy-btn { background: #2ecc71; color: white; border: none; font-size: 10px; padding: 5px; border-radius: 5px; width: 100%; font-weight: bold; }
+        .card-info { flex-grow: 1; padding-top: 5px; overflow: hidden; }
+        .card-adv { font-style: italic; color: #444; font-size: 10px; margin-top: 2px; display: block; }
+        
+        .del-btn { background: #ff4444; color: white; border: none; font-size: 10px; padding: 5px; border-radius: 5px; width: 100%; font-weight: bold; cursor: pointer; margin-top: auto; }
+        .buy-btn { background: #2ecc71; color: white; border: none; font-size: 10px; padding: 5px; border-radius: 5px; width: 100%; font-weight: bold; margin-top: auto; }
 
-        /* UI ELEMEK */
         .ui-box { background: #1e1e1e; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #333; }
-        input, textarea { width: 90%; padding: 12px; margin: 5px 0; border-radius: 10px; border: none; background: #2a2a2a; color: white; font-size: 16px; }
+        input { width: 90%; padding: 12px; margin: 5px 0; border-radius: 10px; border: none; background: #2a2a2a; color: white; font-size: 16px; }
         .btn { background: #ffcb05; color: #3c5aa6; border: 2px solid #3c5aa6; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 18px; }
 
-        /* ALSÓ NAVBAR */
         .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a; display: flex; justify-content: space-around; padding: 12px 0; border-top: 2px solid #333; z-index: 1000; }
         .nav-item { color: #888; font-size: 12px; background: none; border: none; text-align: center; cursor: pointer; }
         .nav-item.active { color: #ffcb05; font-weight: bold; }
@@ -74,6 +66,7 @@
             <h3>🎨 Kártya Szerkesztő</h3>
             <input type="text" id="inName" placeholder="Pokémon neve">
             <input type="number" id="inHP" placeholder="HP">
+            <input type="text" id="inAdv" placeholder="Előny / Képesség..."> 
             <input type="file" id="fileIn" accept="image/*" onchange="loadImg(this)">
             <button class="btn" style="margin-top:15px;" onclick="save()">MENTÉS (50 🪙)</button>
         </div>
@@ -104,9 +97,9 @@
     let tempPic = "";
     
     const shopItems = [
-        { name: "Pikachu", hp: 60, img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png", price: 200 },
-        { name: "Charizard", hp: 120, img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png", price: 500 },
-        { name: "Mewtwo", hp: 150, img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png", price: 800 }
+        { name: "Pikachu", hp: 60, adv: "Villámcsapás", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png", price: 200 },
+        { name: "Charizard", hp: 120, adv: "Tűzlabda", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png", price: 500 },
+        { name: "Mewtwo", hp: 150, adv: "Pszicho-hullám", img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png", price: 800 }
     ];
 
     function tab(id, b) {
@@ -126,45 +119,37 @@
         }
     }
 
-    // JAVÍTOTT AUTH: Betölti a mentett kártyákat bejelentkezéskor
     function auth() {
         const u = document.getElementById('uName').value.trim().toLowerCase();
         const p = document.getElementById('uPass').value;
         if(!u || !p) return alert("Adj meg nevet és jelszót!");
-        
         let data = JSON.parse(localStorage.getItem('pk_save_' + u));
-        
-        if (data && data.password !== p) {
-            return alert("Hibás jelszó ehhez a névhez!");
-        }
-
+        if (data && data.password !== p) return alert("Hibás jelszó!");
         player = data || { username: u, password: p, money: 500, deck: [], lastDaily: "" };
-        
         document.getElementById('loginPage').classList.add('hidden');
         document.getElementById('menu').classList.remove('hidden');
-        
         updateCoins();
-        tab('deckPage', document.querySelectorAll('.nav-item')[1]);
+        tab('editorPage', document.querySelectorAll('.nav-item')[0]);
     }
 
     function save() {
         const nameVal = document.getElementById('inName').value;
         const hpVal = document.getElementById('inHP').value;
+        const advVal = document.getElementById('inAdv').value; // Mentjük az előnyt
         
         if(!nameVal) return alert("Adj meg nevet!");
         if(!tempPic) return alert("Válassz ki egy fotót!");
         if(player.money < 50) return alert("Nincs elég pénzed!");
 
         player.money -= 50;
-        player.deck.push({ name: nameVal, hp: hpVal || 0, img: tempPic });
+        player.deck.push({ name: nameVal, hp: hpVal || 0, adv: advVal || "", img: tempPic });
         
         document.getElementById('inName').value = "";
         document.getElementById('inHP').value = "";
+        document.getElementById('inAdv').value = "";
         tempPic = "";
         
-        sync(); 
-        updateCoins(); 
-        alert("Kártya elmentve!");
+        sync(); updateCoins(); alert("Kártya elmentve!");
     }
 
     function renderDeck() {
@@ -176,7 +161,8 @@
                     <img src="${c.img}">
                     <div class="card-info">
                         <b>${c.name}</b><br>
-                        <small>HP: ${c.hp}</small>
+                        <small>HP: ${c.hp}</small><br>
+                        <span class="card-adv">${c.adv}</span>
                     </div>
                     <button class="del-btn" onclick="removeCard(${i})">Törlés (+25🪙)</button>
                 </div>`;
@@ -206,27 +192,23 @@
                     <img src="${item.img}">
                     <div class="card-info">
                         <b>${item.name}</b><br>
+                        <span class="card-adv">${item.adv}</span><br>
                         ${item.price} 🪙
                     </div>
-                    <button class="buy-btn" onclick="buyItem('${item.name}', ${item.hp}, '${item.img}', ${item.price})">MEGVESZ</button>
+                    <button class="buy-btn" onclick="buyItem('${item.name}', ${item.hp}, '${item.adv}', '${item.img}', ${item.price})">MEGVESZ</button>
                 </div>`;
         });
     }
 
-    function buyItem(name, hp, img, price) {
+    function buyItem(name, hp, adv, img, price) {
         if(player.money < price) return alert("Nincs elég pénzed!");
         player.money -= price;
-        player.deck.push({ name, hp, img });
-        sync(); updateCoins(); alert("Sikeres vásárlás!");
+        player.deck.push({ name, hp, adv, img });
+        sync(); updateCoins(); alert("Megvetted!");
     }
 
-    function updateCoins() { 
-        document.querySelectorAll('.coins').forEach(e => e.innerText = player.money); 
-    }
-    
-    function sync() { 
-        localStorage.setItem('pk_save_' + player.username, JSON.stringify(player)); 
-    }
+    function updateCoins() { document.querySelectorAll('.coins').forEach(e => e.innerText = player.money); }
+    function sync() { localStorage.setItem('pk_save_' + player.username, JSON.stringify(player)); }
 </script>
 </body>
 </html>
