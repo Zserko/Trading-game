@@ -24,6 +24,26 @@ font-size:22px;
 padding:20px;
 }
 
+.versionTop{
+position:fixed;
+top:10px;
+left:10px;
+background:#222;
+padding:5px 10px;
+border-radius:10px;
+font-size:12px;
+}
+
+.versionLogin{
+position:fixed;
+bottom:10px;
+right:10px;
+background:#222;
+padding:5px 10px;
+border-radius:10px;
+font-size:12px;
+}
+
 button{
 padding:10px 15px;
 border:none;
@@ -107,6 +127,8 @@ border-radius:15px;
 
 <body>
 
+<div class="versionTop">v2</div>
+
 <header>Ipari Card Game</header>
 
 <div class="container">
@@ -119,14 +141,15 @@ border-radius:15px;
 
 <br>
 
-<button onclick="register()">Regisztráció</button>
 <button onclick="login()">Belépés</button>
+
+<div class="versionLogin">v2</div>
 
 </div>
 
 <div id="game" class="hidden">
 
-<h3 id="coins">0 coin</h3>
+<h3 id="coinsText">0 coin</h3>
 
 <h2>Kártya készítés</h2>
 
@@ -188,7 +211,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 
 import {
 getAuth,
-createUserWithEmailAndPassword,
 signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -204,8 +226,8 @@ doc
 const firebaseConfig = {
 
 apiKey: "IDE_APIKEY",
-authDomain: "IDE_AUTH",
-projectId: "IDE_PROJECT",
+authDomain: "IDE_AUTHDOMAIN",
+projectId: "IDE_PROJECTID",
 storageBucket: "IDE_STORAGE",
 messagingSenderId: "IDE_ID",
 appId: "IDE_APP"
@@ -213,38 +235,15 @@ appId: "IDE_APP"
 };
 
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
-
 const db = getFirestore(app);
 
 let coins=0
 
-const rarityList=[
-"Common",
-"Uncommon",
-"Rare",
-"Epic",
-"Legendary",
-"Mythic",
-"Exotic"
-]
-
-window.register=async()=>{
-
-const email=email.value
-const password=password.value
-
-await createUserWithEmailAndPassword(auth,email,password)
-
-alert("regisztráció kész")
-
-}
-
 window.login=async()=>{
 
-const email=email.value
-const password=password.value
+const email=document.getElementById("email").value
+const password=document.getElementById("password").value
 
 await signInWithEmailAndPassword(auth,email,password)
 
