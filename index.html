@@ -2,7 +2,7 @@
 <html lang="hu">
 <head>
 <meta charset="UTF-8">
-<title>Ipari Card Game</title>
+<title>Ipari Online</title>
 
 <style>
 
@@ -11,126 +11,69 @@ background:#0a0a0a;
 color:white;
 font-family:Arial;
 text-align:center;
-margin:0;
 }
 
-header{
-background:#111;
-padding:15px;
-font-size:22px;
+.card{
+background:#222;
+border-radius:15px;
+padding:10px;
+margin:10px;
+display:inline-block;
+width:150px;
 }
 
-.container{
-padding:20px;
+img{
+width:100%;
+border-radius:10px;
+}
+
+button{
+padding:10px;
+border:none;
+border-radius:8px;
+background:#ffcb05;
+cursor:pointer;
 }
 
 input{
 padding:10px;
 margin:5px;
-border-radius:8px;
-border:none;
-}
-
-button{
-padding:10px 15px;
-border:none;
-border-radius:10px;
-background:#ffcb05;
-cursor:pointer;
-margin:5px;
-font-weight:bold;
-}
-
-.album{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:10px;
-margin-top:20px;
-}
-
-.card{
-background:#1a1a1a;
-border-radius:15px;
-padding:10px;
-}
-
-.card img{
-width:100%;
-border-radius:10px;
-}
-
-.hidden{
-display:none;
-}
-
-/* VERSION */
-
-.versionTop{
-position:fixed;
-top:10px;
-left:10px;
-background:#222;
-padding:5px 10px;
-border-radius:10px;
-font-size:12px;
-}
-
-.versionLogin{
-position:fixed;
-bottom:10px;
-right:10px;
-background:#222;
-padding:5px 10px;
-border-radius:10px;
-font-size:12px;
 }
 
 </style>
 
 </head>
-
 <body>
 
-<div class="versionTop">v2</div>
-
-<header>Ipari Card Game</header>
-
-<div class="container">
+<h1>Ipari Online</h1>
 
 <div id="login">
 
-<h2>Bejelentkezés</h2>
-
 <input id="email" placeholder="email">
-<br>
-<input id="password" type="password" placeholder="jelszó">
+<input id="pass" type="password" placeholder="jelszó">
 
-<br>
+<br><br>
 
 <button onclick="register()">Regisztráció</button>
 <button onclick="login()">Belépés</button>
 
-<div class="versionLogin">v2</div>
-
 </div>
 
-<div id="game" class="hidden">
+<div id="game" style="display:none">
 
 <h2>Kártya készítés</h2>
 
-<input id="cardName" placeholder="Kártya neve">
+<input id="cardName" placeholder="kártya név">
 <input id="cardHP" placeholder="HP">
-<input id="cardImg" placeholder="Kép URL">
+<input id="cardImg" placeholder="kép URL">
 
-<br>
+<br><br>
 
-<button onclick="createCard()">Kártya mentése</button>
+<button onclick="createCard()">Mentés</button>
 
 <h2>Album</h2>
 
-<div id="album" class="album"></div>
-
-</div>
+<div id="album"></div>
 
 </div>
 
@@ -152,45 +95,38 @@ getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-
-apiKey: "IDE_A_SAJAT_APIKEY",
-authDomain: "IDE_A_SAJAT_AUTHDOMAIN",
-projectId: "IDE_A_SAJAT_PROJECTID",
-storageBucket: "IDE_A_SAJAT_STORAGE",
-messagingSenderId: "IDE_A_SAJAT_ID",
-appId: "IDE_A_SAJAT_APPID"
-
+apiKey: "AIzaSyD6g6AKHiOCugYhjmZP1XTHELUgXSwrAII",
+authDomain: "game-61125.firebaseapp.com",
+projectId: "game-61125",
+storageBucket: "game-61125.firebasestorage.app",
+messagingSenderId: "1090065809070",
+appId: "1:1090065809070:web:7dce645922028fff29773f"
 };
 
 const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-
+const auth = getAuth();
 const db = getFirestore(app);
 
 window.register = async function(){
 
 const email=document.getElementById("email").value
+const pass=document.getElementById("pass").value
 
-const password=document.getElementById("password").value
+await createUserWithEmailAndPassword(auth,email,pass)
 
-await createUserWithEmailAndPassword(auth,email,password)
-
-alert("Sikeres regisztráció")
+alert("Regisztrálva!")
 
 }
 
 window.login = async function(){
 
 const email=document.getElementById("email").value
+const pass=document.getElementById("pass").value
 
-const password=document.getElementById("password").value
+await signInWithEmailAndPassword(auth,email,pass)
 
-await signInWithEmailAndPassword(auth,email,password)
-
-document.getElementById("login").classList.add("hidden")
-
-document.getElementById("game").classList.remove("hidden")
+document.getElementById("login").style.display="none"
+document.getElementById("game").style.display="block"
 
 loadCards()
 
@@ -199,20 +135,16 @@ loadCards()
 window.createCard = async function(){
 
 const name=document.getElementById("cardName").value
-
 const hp=document.getElementById("cardHP").value
-
 const img=document.getElementById("cardImg").value
 
 await addDoc(collection(db,"cards"),{
-
 name:name,
 hp:hp,
 img:img
-
 })
 
-alert("Kártya mentve")
+alert("kártya mentve")
 
 loadCards()
 
@@ -220,28 +152,22 @@ loadCards()
 
 async function loadCards(){
 
-const snapshot=await getDocs(collection(db,"cards"))
+const querySnapshot = await getDocs(collection(db,"cards"))
 
 const album=document.getElementById("album")
 
 album.innerHTML=""
 
-snapshot.forEach(doc=>{
+querySnapshot.forEach((doc)=>{
 
 const c=doc.data()
 
 album.innerHTML+=`
-
 <div class="card">
-
 <h3>${c.name}</h3>
-
 <img src="${c.img}">
-
 <p>HP ${c.hp}</p>
-
 </div>
-
 `
 
 })
