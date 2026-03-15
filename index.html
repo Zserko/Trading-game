@@ -2,223 +2,253 @@
 <html lang="hu">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ipari 1v1</title>
+<title>Ipari Card Game</title>
+
 <style>
-body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding-bottom: 100px; }
-.hidden { display: none !important; }
-.page { padding: 20px; text-align: center; min-height: 100vh; }
-.header-title { color: #ffcb05; font-size: 35px; font-weight: 800; text-transform: uppercase; margin-top: 40px; }
 
-.input-box, select { width: 85%; padding: 15px; border-radius: 12px; border: 2px solid #333; background: #1a1a1a; color: white; margin-bottom: 10px; text-align: center; }
+body{
+background:#0a0a0a;
+color:white;
+font-family:Arial;
+text-align:center;
+margin:0;
+}
 
-.big-card { background: linear-gradient(145deg, #ffd700, #ff8c00); border: 4px solid #fff; border-radius: 20px; color: black; padding: 12px; width: 80%; max-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); text-align: left; position: relative; }
-.big-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; border: 2px solid #333; background: white; }
-.hp-badge { float: right; color: #d32f2f; font-weight: bold; font-size: 18px; }
+header{
+background:#111;
+padding:15px;
+font-size:22px;
+}
 
-.album, .deck-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 20px; }
-.card { background:#1a1a1a; border-radius:15px; padding:10px; }
-.card img { width:100%; border-radius:10px; }
+.container{
+padding:20px;
+}
 
-.btn { background: #ffcb05; color: #3c5aa6; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; font-size: 14px; }
-.btn-red { background: #ff4444; color: white; }
-.btn-blue { background: #3498db; color: white; }
+input{
+padding:10px;
+margin:5px;
+border-radius:8px;
+border:none;
+}
 
-.navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 15px 0; border-top: 2px solid #222; z-index: 1000; }
-.nav-item { color: #666; background: none; border: none; font-size: 12px; cursor: pointer; }
-.nav-item.active { color: #ffcb05; font-weight: bold; }
+button{
+padding:10px 15px;
+border:none;
+border-radius:10px;
+background:#ffcb05;
+cursor:pointer;
+margin:5px;
+font-weight:bold;
+}
 
-.back-btn { position: absolute; top: 15px; left: 15px; background: #333; color: white; border: none; padding: 8px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; z-index: 2100; }
+.album{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
+margin-top:20px;
+}
 
-.profile-pic { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #ffcb05; margin-bottom: 10px; }
+.card{
+background:#1a1a1a;
+border-radius:15px;
+padding:10px;
+}
+
+.card img{
+width:100%;
+border-radius:10px;
+}
+
+.hidden{
+display:none;
+}
+
+/* VERSION */
+
+.versionTop{
+position:fixed;
+top:10px;
+left:10px;
+background:#222;
+padding:5px 10px;
+border-radius:10px;
+font-size:12px;
+}
+
+.versionLogin{
+position:fixed;
+bottom:10px;
+right:10px;
+background:#222;
+padding:5px 10px;
+border-radius:10px;
+font-size:12px;
+}
+
 </style>
+
 </head>
+
 <body>
 
-<div id="cardModal" class="modal hidden">
-    <button class="back-btn" onclick="document.getElementById('cardModal').classList.add('hidden')">⬅ Vissza</button>
-    <div class="modal-content" id="modalData"></div>
+<div class="versionTop">v2</div>
+
+<header>Ipari Card Game</header>
+
+<div class="container">
+
+<div id="login">
+
+<h2>Bejelentkezés</h2>
+
+<input id="email" placeholder="email">
+<br>
+<input id="password" type="password" placeholder="jelszó">
+
+<br>
+
+<button onclick="register()">Regisztráció</button>
+<button onclick="login()">Belépés</button>
+
+<div class="versionLogin">v2</div>
+
 </div>
 
-<div id="loginPage" class="page">
-    <div class="header-title">Ipari 1v1</div>
-    <p style="color:#666;">Bejelentkezés</p>
-    <input type="text" id="uName" class="input-box" placeholder="Felhasználónév">
-    <input type="password" id="uPass" class="input-box" placeholder="Jelszó">
-    <button class="btn" onclick="auth()">BELÉPÉS</button>
+<div id="game" class="hidden">
+
+<h2>Kártya készítés</h2>
+
+<input id="cardName" placeholder="Kártya neve">
+<input id="cardHP" placeholder="HP">
+<input id="cardImg" placeholder="Kép URL">
+
+<br>
+
+<button onclick="createCard()">Kártya mentése</button>
+
+<h2>Album</h2>
+
+<div id="album" class="album"></div>
+
 </div>
 
-<div id="deckPage" class="page hidden">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="margin:0;">🎒 Gyűjtemény</h2>
-        <div style="background:#ffcb05; color:black; padding:5px 12px; border-radius:15px; font-weight:bold;">
-            <span id="coinCount">0</span> 🪙
-        </div>
-    </div>
-    <div id="deckList" class="deck-grid"></div>
 </div>
 
-<div id="editorPage" class="page hidden">
-    <h2>🎨 Új Lap</h2>
-    <div class="big-card" style="margin: 0 auto 20px auto;">
-        <div id="eHp" class="hp-badge" onclick="ask('eHpVal','HP?')">HP 0</div>
-        <div id="eName" style="font-size:18px; font-weight:bold; margin-bottom:8px;" onclick="ask('eNameVal','Név?')">Név...</div>
-        <div style="height:160px; background:white; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;" onclick="document.getElementById('fileIn').click()">
-            <img id="eImg" style="display:none; width:100%; height:100%; object-fit:cover;">
-            <span style="color:#999;">➕ KÉP</span>
-        </div>
-        <select id="eRarity">
-            <option value="Common">Common</option>
-            <option value="Uncommon">Uncommon</option>
-            <option value="Rare">Rare</option>
-            <option value="Epic">Epic</option>
-            <option value="Legendary">Legendary</option>
-            <option value="Mythic">Mythic</option>
-            <option value="Exotic">Exotic</option>
-        </select>
-        <input type="file" id="fileIn" class="hidden" onchange="loadCardImg(this)">
-        <input type="hidden" id="eNameVal"><input type="hidden" id="eHpVal">
-    </div>
-    <button class="btn" onclick="saveNewCard()">KÁRTYA MENTÉSE (50 🪙)</button>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
+import {
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+
+apiKey: "IDE_A_SAJAT_APIKEY",
+authDomain: "IDE_A_SAJAT_AUTHDOMAIN",
+projectId: "IDE_A_SAJAT_PROJECTID",
+storageBucket: "IDE_A_SAJAT_STORAGE",
+messagingSenderId: "IDE_A_SAJAT_ID",
+appId: "IDE_A_SAJAT_APPID"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+window.register = async function(){
+
+const email=document.getElementById("email").value
+
+const password=document.getElementById("password").value
+
+await createUserWithEmailAndPassword(auth,email,password)
+
+alert("Sikeres regisztráció")
+
+}
+
+window.login = async function(){
+
+const email=document.getElementById("email").value
+
+const password=document.getElementById("password").value
+
+await signInWithEmailAndPassword(auth,email,password)
+
+document.getElementById("login").classList.add("hidden")
+
+document.getElementById("game").classList.remove("hidden")
+
+loadCards()
+
+}
+
+window.createCard = async function(){
+
+const name=document.getElementById("cardName").value
+
+const hp=document.getElementById("cardHP").value
+
+const img=document.getElementById("cardImg").value
+
+await addDoc(collection(db,"cards"),{
+
+name:name,
+hp:hp,
+img:img
+
+})
+
+alert("Kártya mentve")
+
+loadCards()
+
+}
+
+async function loadCards(){
+
+const snapshot=await getDocs(collection(db,"cards"))
+
+const album=document.getElementById("album")
+
+album.innerHTML=""
+
+snapshot.forEach(doc=>{
+
+const c=doc.data()
+
+album.innerHTML+=`
+
+<div class="card">
+
+<h3>${c.name}</h3>
+
+<img src="${c.img}">
+
+<p>HP ${c.hp}</p>
+
 </div>
 
-<div id="friendsPage" class="page hidden">
-    <h2>👥 Barátok</h2>
-    <button class="btn btn-blue" onclick="inviteFriend()">SAJÁT KÓD MÁSOLÁSA</button>
-    <button class="btn" onclick="addFriend()">BARÁT HOZZÁADÁSA</button>
-    <div id="friendsList" style="margin-top:20px; text-align: left;"></div>
-</div>
+`
 
-<nav class="navbar hidden" id="menu">
-    <button class="nav-item active" onclick="tab('deckPage', this)">🎒 Pakli</button>
-    <button class="nav-item" onclick="tab('editorPage', this)">🎨 Készítő</button>
-    <button class="nav-item" onclick="tab('friendsPage', this)">👥 Barátok</button>
-</nav>
+})
 
-<script>
-let player = null;
-let tempImg = "";
-
-function auth() {
-    const u = document.getElementById('uName').value.trim().toLowerCase();
-    const p = document.getElementById('uPass').value;
-    if(!u || !p) return alert("Hiányzó adatok!");
-    let data = JSON.parse(localStorage.getItem('ipari_v2_' + u));
-    if(data) {
-        if(data.password !== p) return alert("Hibás jelszó!");
-        player = data;
-    } else {
-        player = { username: u, password: p, money: 500, deck: [], friends: [] };
-    }
-    document.getElementById('loginPage').classList.add('hidden');
-    document.getElementById('menu').classList.remove('hidden');
-    tab('deckPage', document.querySelectorAll('.nav-item')[0]);
-    updateUI();
 }
 
-function sync() { localStorage.setItem('ipari_v2_' + player.username.toLowerCase(), JSON.stringify(player)); }
-
-function updateUI() { document.getElementById('coinCount').innerText = player.money; }
-
-function tab(id, btn) {
-    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-    document.getElementById(id).classList.remove('hidden');
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    if(btn) btn.classList.add('active');
-    if(id === 'deckPage') renderDeck();
-    if(id === 'friendsPage') renderFriends();
-}
-
-function ask(id, txt) {
-    let val = prompt(txt);
-    if(val) {
-        document.getElementById(id).value = val;
-        if(id === 'eHpVal') document.getElementById('eHp').innerText = "HP " + val;
-        if(id === 'eNameVal') document.getElementById('eName').innerText = val;
-    }
-}
-
-function loadCardImg(i) {
-    const r = new FileReader();
-    r.onload=(e)=>{ tempImg=e.target.result; document.getElementById('eImg').src=tempImg; document.getElementById('eImg').style.display='block'; };
-    r.readAsDataURL(i.files[0]);
-}
-
-function saveNewCard() {
-    if(!tempImg || !document.getElementById('eNameVal').value) return alert("Név és kép kell!");
-    if(player.money < 50) return alert("Nincs elég pénzed!");
-    const rarity = document.getElementById('eRarity').value;
-    player.money -= 50;
-    player.deck.push({ name: document.getElementById('eNameVal').value, hp: document.getElementById('eHpVal').value || 0, img: tempImg, rarity: rarity });
-    sync(); tab('deckPage');
-}
-
-function renderDeck() {
-    const l = document.getElementById('deckList');
-    l.innerHTML = "";
-    player.deck.forEach((c, i) => {
-        l.innerHTML += `
-            <div class="big-card" onclick="openCard(${i})">
-                <div class="hp-badge">HP ${c.hp}</div>
-                <div style="font-size:18px; font-weight:bold; margin-bottom:4px;">${c.name}</div>
-                <div style="font-size:14px; font-weight:bold; margin-bottom:8px;">${c.rarity}</div>
-                <img src="${c.img}">
-            </div>`;
-    });
-    updateUI();
-}
-
-function openCard(i) {
-    const c = player.deck[i];
-    const modal = document.getElementById('cardModal');
-    modal.classList.remove('hidden');
-    document.getElementById('modalData').innerHTML = `
-        <div class="big-card" style="margin: 20px auto; width: 100%;">
-            <div class="hp-badge">HP ${c.hp}</div>
-            <div style="font-size:20px; font-weight:bold; margin-bottom:8px;">${c.name}</div>
-            <div style="font-size:16px; font-weight:bold; margin-bottom:8px;">${c.rarity}</div>
-            <img src="${c.img}">
-        </div>
-        <button class="btn btn-red" onclick="sellCard(${i})">💰 ELADÁS (75 🪙)</button>
-    `;
-}
-
-function sellCard(i) {
-    player.money += 75;
-    player.deck.splice(i, 1);
-    sync(); document.getElementById('cardModal').classList.add('hidden'); renderDeck();
-}
-
-function inviteFriend() {
-    const code = btoa(JSON.stringify({n: player.username, d: player.deck.slice(0,3)}));
-    navigator.clipboard.writeText(code);
-    alert("Kód kimásolva!");
-}
-
-function addFriend() {
-    let code = prompt("Másold be a barátod kódját:");
-    if(code) {
-        try {
-            let fData = JSON.parse(atob(code));
-            if(!player.friends.find(f => f.n === fData.n)) {
-                player.friends.push(fData);
-                sync(); renderFriends();
-            }
-        } catch(e) { alert("Hiba a kóddal!"); }
-    }
-}
-
-function renderFriends() {
-    const list = document.getElementById('friendsList');
-    list.innerHTML = player.friends.length ? "" : "<p>Nincsenek barátok.</p>";
-    player.friends.forEach((f, i) => {
-        list.innerHTML += `
-            <div style="background:#1a1a1a; padding:15px; border-radius:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border: 1px solid #333;">
-                <span><b>${f.n}</b></span>
-                <button class="btn btn-blue" style="width:auto; margin:0;" onclick="alert('${f.n} lapjai: ' + '${f.d.map(ld => ld.name).join(', ')}')">LAPOK</button>
-            </div>`;
-    });
-}
 </script>
+
 </body>
 </html>
