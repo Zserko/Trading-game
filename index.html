@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Ipari Card Game</title>
 
 <style>
@@ -13,7 +15,6 @@ color:white;
 font-family:Arial;
 text-align:center;
 margin:0;
-height:100vh;
 overflow:hidden;
 }
 
@@ -115,6 +116,7 @@ color:white;
 
 <input id="email" placeholder="email">
 <br>
+
 <input id="password" type="password" placeholder="jelszó">
 
 <br>
@@ -123,6 +125,7 @@ color:white;
 <button onclick="login()">Belépés</button>
 
 </div>
+
 
 <div id="game" class="hidden">
 
@@ -159,6 +162,7 @@ color:white;
 
 </div>
 
+
 <div id="cardView" class="hidden cardView">
 
 <button class="backButton" onclick="closeCard()">Vissza</button>
@@ -166,6 +170,7 @@ color:white;
 <div id="bigCard" class="bigCard"></div>
 
 </div>
+
 
 <script type="module">
 
@@ -199,7 +204,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let coins=0
+let coins = 0
+
 
 window.register = async function(){
 
@@ -211,6 +217,7 @@ await createUserWithEmailAndPassword(auth,email,password)
 alert("Sikeres regisztráció")
 
 }
+
 
 window.login = async function(){
 
@@ -226,35 +233,37 @@ loadCards()
 
 }
 
+
 window.useCode=function(){
 
 if(localStorage.getItem("codeUsed")){
-
 alert("Már használtad")
-
 return
-
 }
 
-if(document.getElementById("creatorCode").value.toLowerCase()=="zserko"){
+const code=document.getElementById("creatorCode").value.toLowerCase()
+
+if(code=="zserko"){
 
 coins+=1000
 
-localStorage.setItem("codeUsed",true)
+localStorage.setItem("codeUsed","true")
 
 updateCoins()
 
-alert("1000 coin!")
+alert("Kaptál 1000 coin-t!")
 
 }
 
 }
+
 
 function updateCoins(){
 
 document.getElementById("coinText").innerText="Coin: "+coins
 
 }
+
 
 window.createCard = async function(){
 
@@ -278,6 +287,7 @@ loadCards()
 
 }
 
+
 async function loadCards(){
 
 const snapshot=await getDocs(collection(db,"cards"))
@@ -290,9 +300,7 @@ snapshot.forEach(doc=>{
 
 const c=doc.data()
 
-if(c.name.toLowerCase()=="zoli"){
-return
-}
+if(c.name.toLowerCase()=="zoli") return
 
 album.innerHTML+=`
 
@@ -314,6 +322,7 @@ album.innerHTML+=`
 
 }
 
+
 window.openCard=function(name,img,hp,rarity){
 
 document.getElementById("cardView").classList.remove("hidden")
@@ -331,6 +340,7 @@ document.getElementById("bigCard").innerHTML=`
 `
 
 }
+
 
 window.closeCard=function(){
 
