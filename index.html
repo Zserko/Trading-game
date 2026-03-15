@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ipari 1v1</title>
+    <title>Ipari 1v1 - Bővítve</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding-bottom: 100px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding-bottom: 120px; }
         .hidden { display: none !important; }
-        .page { padding: 20px; text-align: center; min-height: 100vh; }
+        .page { padding: 20px; text-align: center; min-height: 100vh; box-sizing: border-box; }
 
         .header-title { color: #ffcb05; font-size: 35px; font-weight: 800; text-transform: uppercase; margin-top: 40px; }
 
@@ -22,33 +22,75 @@
         .big-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; border: 2px solid #333; background: white; }
         .hp-badge { float: right; color: #d32f2f; font-weight: bold; font-size: 18px; }
 
+        /* ALBUM GRID */
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .album-card {
+            background: #111;
+            border-radius: 12px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid #222;
+            overflow: hidden;
+        }
+        .album-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; display:block; margin-bottom:6px; }
+        .album-card.gray { filter: grayscale(100%) brightness(0.7); opacity:0.7; }
+
         /* MODAL / KÁRTYA RÉSZLETEK */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: flex; justify-content: center; align-items: center; }
-        .modal-content { background: #1a1a1a; padding: 20px; border-radius: 25px; width: 90%; max-width: 350px; position: relative; border: 1px solid #333; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .modal-content { background: #1a1a1a; padding: 20px; border-radius: 25px; width: 100%; max-width: 420px; position: relative; border: 1px solid #333; color: white; max-height: 90vh; overflow:auto; }
         
         /* VISSZA GOMB BAL FELÜL */
         .back-btn { position: absolute; top: 15px; left: 15px; background: #333; color: white; border: none; padding: 8px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; z-index: 2100; }
 
         /* GOMBOK */
-        .btn { background: #ffcb05; color: #3c5aa6; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; font-size: 14px; }
+        .btn { background: #ffcb05; color: #3c5aa6; border: none; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; font-size: 14px; }
         .btn-red { background: #ff4444; color: white; }
         .btn-blue { background: #3498db; color: white; }
 
         /* NAVBAR */
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 15px 0; border-top: 2px solid #222; z-index: 1000; }
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 12px 0; border-top: 2px solid #222; z-index: 1000; }
         .nav-item { color: #666; background: none; border: none; font-size: 12px; cursor: pointer; }
         .nav-item.active { color: #ffcb05; font-weight: bold; }
 
         .input-box { width: 85%; padding: 15px; border-radius: 12px; border: 2px solid #333; background: #1a1a1a; color: white; margin-bottom: 10px; text-align: center; }
         .profile-pic { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #ffcb05; margin-bottom: 10px; }
+
+        /* FRIENDS LIST */
+        .friends-list { max-width: 900px; margin: 0 auto; text-align:left; display:flex; flex-direction:column; gap:10px; }
+        .friend-row { background:#111; padding:10px; border-radius:12px; display:flex; gap:10px; align-items:center; justify-content:space-between; border:1px solid #222; }
+
+        /* SHOP / EVENT */
+        .shop-box { max-width: 600px; margin: 0 auto; text-align:left; }
+        .small { font-size: 13px; color:#ccc; }
+
+        /* Notifications button */
+        #notifBtn { position: fixed; top: 12px; left: 12px; z-index:2200; background:#ffcb05; color:#111; border-radius:10px; padding:8px 10px; font-weight:bold; border:none; cursor:pointer; }
+        #notifCount { background:#d32f2f; color:white; border-radius:50%; padding:2px 7px; margin-left:8px; font-size:12px; vertical-align:middle; }
+
+        /* Friend profile page cards */
+        .cards-scroll { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; max-width:1000px; margin:10px auto; }
+
+        /* Make pages scrollable if content long */
+        .scroll-area { max-height: calc(100vh - 220px); overflow-y: auto; padding-bottom: 20px; }
+
     </style>
 </head>
 <body>
 
+    <!-- Notifications button top-left -->
+    <button id="notifBtn" class="hidden" onclick="openNotifications()">Értesítések <span id="notifCount">0</span></button>
+
     <div id="cardModal" class="modal hidden">
-        <button class="back-btn" onclick="document.getElementById('cardModal').classList.add('hidden')">⬅ Vissza</button>
-        <div class="modal-content" id="modalData">
-            </div>
+        <button class="back-btn" onclick="closeModal()">⬅ Vissza</button>
+        <div class="modal-content" id="modalData"></div>
     </div>
 
     <div id="loginPage" class="page">
@@ -62,9 +104,17 @@
     <div id="deckPage" class="page hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 style="margin:0;">🎒 Gyűjtemény</h2>
-            <div style="background:#ffcb05; color:black; padding:5px 12px; border-radius:15px; font-weight:bold;"><span id="coinCount">0</span> 🪙</div>
+            <div style="background:#ffcb05; color:black; padding:6px 12px; border-radius:15px; font-weight:bold;"><span id="coinCount">0</span> 🪙</div>
         </div>
-        <div id="deckList" class="deck-grid"></div>
+        <div id="deckList" class="deck-grid scroll-area"></div>
+    </div>
+
+    <div id="albumPage" class="page hidden">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="margin:0;">📚 Album</h2>
+            <div class="small" style="color:#999;">Az összes létrehozott lap. Szürkék: nincsenek a paklidban.</div>
+        </div>
+        <div id="albumGrid" class="album-grid scroll-area" style="margin-top:12px; padding-bottom:50px;"></div>
     </div>
 
     <div id="editorPage" class="page hidden">
@@ -90,6 +140,15 @@
         <div id="friendsList" style="margin-top:20px; text-align: left;"></div>
     </div>
 
+    <div id="friendProfilePage" class="page hidden">
+        <button class="back-btn" onclick="backFromFriend()">⬅ Vissza</button>
+        <div style="margin-top:30px;">
+            <img id="fPicBig" class="profile-pic" src="https://via.placeholder.com/100">
+            <h2 id="fNameBig">Név</h2>
+            <div id="fCards" class="cards-scroll scroll-area"></div>
+        </div>
+    </div>
+
     <div id="profilePage" class="page hidden">
         <h2>👤 Profil</h2>
         <img id="pPic" class="profile-pic" src="https://via.placeholder.com/100" onclick="document.getElementById('pIn').click()">
@@ -98,17 +157,38 @@
         <button class="btn btn-red" onclick="location.reload()">KIJELENTKEZÉS</button>
     </div>
 
+    <div id="shopPage" class="page hidden">
+        <h2>🏪 Bolt</h2>
+        <div class="shop-box">
+            <p class="small">Napi reward: 100 🪙 (egyszer/nap)</p>
+            <button class="btn btn-blue" onclick="claimDaily()">Claim napi reward (100 🪙)</button>
+            <hr style="border-color:#222; margin:12px 0;">
+            <p class="small">7 napos event: minden nap claimelhető. A napokhoz tartozó összeg minden nap +100 🪙-ral nő (1. nap 100, 2. nap 200, … 7. nap 700).</p>
+            <div style="display:flex; gap:10px; margin-top:8px;">
+                <button class="btn" style="width:auto; flex:1;" onclick="claimEvent()">Megigényel / Event claim</button>
+                <div style="width:10px;"></div>
+            </div>
+            <div id="eventInfo" class="small" style="margin-top:10px;"></div>
+        </div>
+    </div>
+
     <nav class="navbar hidden" id="menu">
         <button class="nav-item active" onclick="tab('deckPage', this)">🎒 Pakli</button>
+        <button class="nav-item" onclick="tab('albumPage', this)">📚 Album</button>
         <button class="nav-item" onclick="tab('editorPage', this)">🎨 Készítő</button>
         <button class="nav-item" onclick="tab('friendsPage', this)">👥 Barátok</button>
+        <button class="nav-item" onclick="tab('shopPage', this)">🏪 Bolt</button>
         <button class="nav-item" onclick="tab('profilePage', this)">👤 Profil</button>
     </nav>
 
 <script>
+    // Általános változók
     let player = null;
     let tempImg = "";
+    let globalCards = JSON.parse(localStorage.getItem('ipari_v2_global') || '[]'); // minden létrehozott lap
+    let tradeOffers = JSON.parse(localStorage.getItem('ipari_v2_trade_offers') || '[]'); // csereajánlatok
 
+    // AUTH
     function auth() {
         const u = document.getElementById('uName').value.trim().toLowerCase();
         const p = document.getElementById('uPass').value;
@@ -118,20 +198,31 @@
             if(data.password !== p) return alert("Hibás jelszó!");
             player = data;
         } else {
-            player = { username: u, password: p, money: 500, deck: [], friends: [], pPic: "" };
+            player = { username: u, password: p, money: 500, deck: [], friends: [], pPic: "", shopLastClaim: null, eventStart: null, eventDay: 0 };
+            localStorage.setItem('ipari_v2_' + u, JSON.stringify(player));
         }
         document.getElementById('loginPage').classList.add('hidden');
         document.getElementById('menu').classList.remove('hidden');
+        document.getElementById('notifBtn').classList.remove('hidden');
         tab('deckPage', document.querySelectorAll('.nav-item')[0]);
         updateUI();
+        refreshNotifCount();
     }
 
-    function sync() { localStorage.setItem('ipari_v2_' + player.username.toLowerCase(), JSON.stringify(player)); }
+    function sync() { 
+        if(!player) return;
+        localStorage.setItem('ipari_v2_' + player.username.toLowerCase(), JSON.stringify(player)); 
+        localStorage.setItem('ipari_v2_global', JSON.stringify(globalCards));
+        localStorage.setItem('ipari_v2_trade_offers', JSON.stringify(tradeOffers));
+        refreshNotifCount();
+    }
 
     function updateUI() {
         document.getElementById('coinCount').innerText = player.money;
         document.getElementById('pNameDisp').innerText = player.username;
         if(player.pPic) document.getElementById('pPic').src = player.pPic;
+        // shop event info
+        renderEventInfo();
     }
 
     function tab(id, btn) {
@@ -140,27 +231,327 @@
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         if(btn) btn.classList.add('active');
         if(id === 'deckPage') renderDeck();
+        if(id === 'albumPage') renderAlbum();
         if(id === 'friendsPage') renderFriends();
+        if(id === 'shopPage') renderEventInfo();
     }
 
-    // KÁRTYA NÉZET (Vissza gombbal és egész kártyával)
-    function openCard(i) {
-        const c = player.deck[i];
+    // ---------- GLOBAL CARD HANDLING ----------
+    function createGlobalCardObj(name, hp, adv, img, owner) {
+        return { id: Date.now().toString() + Math.floor(Math.random()*1000), name, hp, adv, img, owner };
+    }
+
+    // ---------- SAVE NEW CARD (editor) ----------
+    function ask(id, txt) {
+        let val = prompt(txt);
+        if(val !== null && val !== "") {
+            document.getElementById(id).value = val;
+            if(id === 'eHpVal') document.getElementById('eHp').innerText = "HP " + val;
+            if(id === 'eNameVal') document.getElementById('eName').innerText = val;
+            if(id === 'eAdvVal') document.getElementById('eAdv').innerText = val;
+        }
+    }
+
+    function loadCardImg(i) {
+        const r = new FileReader();
+        r.onload=(e)=>{ tempImg=e.target.result; document.getElementById('eImg').src=tempImg; document.getElementById('eImg').style.display='block'; };
+        r.readAsDataURL(i.files[0]);
+    }
+
+    function saveNewCard() {
+        if(!tempImg || !document.getElementById('eNameVal').value) return alert("Név és kép kell!");
+        if(player.money < 50) return alert("Nincs elég pénzed!");
+        player.money -= 50;
+        const cardObj = createGlobalCardObj(
+            document.getElementById('eNameVal').value,
+            document.getElementById('eHpVal').value || 0,
+            document.getElementById('eAdvVal').value || "",
+            tempImg,
+            player.username
+        );
+        // player deck: tároljuk teljes objektumot is (azonosítóval)
+        player.deck.push(Object.assign({}, cardObj));
+        // global repository
+        globalCards.push(Object.assign({}, cardObj));
+        sync(); tab('deckPage');
+        tempImg = "";
+        document.getElementById('eImg').style.display = 'none';
+        updateUI();
+    }
+
+    // ---------- DECK RENDER ----------
+    function renderDeck() {
+        const l = document.getElementById('deckList');
+        l.innerHTML = "";
+        if(player.deck.length === 0) l.innerHTML = "<p style='color:#999;'>Nincsenek lapok a paklidban.</p>";
+        player.deck.forEach((c, i) => {
+            l.innerHTML += `
+                <div class="big-card" onclick="openAnyCard('${c.id}', '${c.owner}')">
+                    <div class="hp-badge">HP ${c.hp}</div>
+                    <div style="font-size:18px; font-weight:bold; margin-bottom:8px;">${escapeHtml(c.name)}</div>
+                    <img src="${c.img}">
+                    <div style="margin-top:8px; font-size:12px; background:rgba(255,255,255,0.2); padding:8px; border-radius:8px;">${escapeHtml(c.adv)}</div>
+                </div>`;
+        });
+        updateUI();
+    }
+
+    // ---------- ALBUM RENDER ----------
+    function renderAlbum() {
+        // ensure globalCards updated from storage
+        globalCards = JSON.parse(localStorage.getItem('ipari_v2_global') || '[]');
+        const grid = document.getElementById('albumGrid');
+        grid.innerHTML = "";
+        if(globalCards.length === 0) {
+            grid.innerHTML = "<p style='grid-column: 1 / -1; color:#999;'>Még nincs egyetlen lap sem.</p>";
+            return;
+        }
+        globalCards.forEach((c, idx) => {
+            const owns = player.deck.find(d => d.id === c.id);
+            const ownerLabel = c.owner === player.username ? " (te)" : (" — " + c.owner);
+            grid.innerHTML += `
+                <div class="album-card ${owns ? "" : "gray"}" onclick="openAnyCard('${c.id}', '${c.owner}')">
+                    <img src="${c.img}">
+                    <div style="font-weight:bold; font-size:14px;">${escapeHtml(c.name)}</div>
+                    <div style="font-size:12px; color:#ccc;">HP ${c.hp} ${ownerLabel}</div>
+                </div>
+            `;
+        });
+    }
+
+    // ---------- OPEN ANY CARD (deck OR album) ----------
+    function openAnyCard(cardId, owner) {
+        // find card in globalCards (preferred), fallback to player's deck
+        let card = globalCards.find(gc => gc.id === cardId);
+        if(!card) {
+            card = player.deck.find(d => d.id === cardId);
+        }
+        if(!card) return alert("Kártya nem található.");
         const modal = document.getElementById('cardModal');
         modal.classList.remove('hidden');
+
+        const owns = !!player.deck.find(d => d.id === card.id);
+        const isMine = (card.owner === player.username);
+
+        // Buttons: Ha saját lap (pakliban): Eladás (50) és Csere. Ha másé: lehet Csere (kérés), de eladás nem engedjük.
+        let sellBtn = owns ? `<button class="btn btn-red" onclick="sellCardModal('${card.id}')">💰 ELADÁS (50 🪙)</button>` : '';
+        let tradeBtn = `<button class="btn btn-blue" onclick="startTrade('${card.id}')">🔁 CSERE</button>`;
+
         document.getElementById('modalData').innerHTML = `
-            <div class="big-card" style="margin: 20px auto; width: 100%; box-shadow: none;">
-                <div class="hp-badge">HP ${c.hp}</div>
-                <div style="font-size:18px; font-weight:bold; margin-bottom:8px;">${c.name}</div>
-                <img src="${c.img}">
-                <div style="margin-top:8px; font-size:12px; background:rgba(255,255,255,0.2); padding:8px; border-radius:8px;">${c.adv}</div>
+            <div class="big-card" style="margin: 10px auto; width: 100%; box-shadow: none;">
+                <div class="hp-badge">HP ${card.hp}</div>
+                <div style="font-size:18px; font-weight:bold; margin-bottom:8px;">${escapeHtml(card.name)}</div>
+                <img src="${card.img}">
+                <div style="margin-top:8px; font-size:12px; background:rgba(255,255,255,0.05); padding:8px; border-radius:8px; color:#ddd;">${escapeHtml(card.adv)}</div>
+                <div style="margin-top:8px; font-size:12px; color:#aaa;">Készítette: ${card.owner}</div>
             </div>
-            <button class="btn" onclick="upgradeCard(${i})">🆙 FEJLESZTÉS (150 🪙)</button>
-            <button class="btn btn-red" onclick="sellCard(${i})">💰 ELADÁS (75 🪙)</button>
+            ${sellBtn}
+            ${tradeBtn}
         `;
     }
 
-    // BARÁTOK RENDSZER
+    function closeModal(){
+        document.getElementById('cardModal').classList.add('hidden');
+        document.getElementById('modalData').innerHTML = "";
+    }
+
+    // SELL from modal (50 coins)
+    function sellCardModal(cardId) {
+        if(!confirm("Biztosan eladod ezt a lapot 50 🪙-ért?")) return;
+        // remove from player's deck
+        const idx = player.deck.findIndex(d => d.id === cardId);
+        if(idx === -1) return alert("Nincs ilyen lapod.");
+        player.deck.splice(idx,1);
+        // also optionally update global owner? we keep global entry but owner remains original creator.
+        player.money += 50;
+        sync();
+        closeModal();
+        renderDeck();
+        renderAlbum();
+        alert("Eladva: +50 🪙");
+    }
+
+    // ---------- TRADE FLOW ----------
+    function startTrade(cardId) {
+        // we are requesting this card FROM its owner
+        const card = globalCards.find(c=>c.id===cardId) || null;
+        if(!card) return alert("Kártya nem található a globális gyűjteményben.");
+
+        // Choose friend from player's friends array
+        if(player.friends.length === 0) return alert("Nincsenek barátaid. Előbb adj hozzá barátot.");
+        // Build prompt choices
+        let choices = player.friends.map((f,i)=>`${i+1}: ${f.n}`).join("\n");
+        let selection = prompt("Válassz barátot (szám):\n" + choices);
+        if(!selection) return;
+        const idx = parseInt(selection)-1;
+        if(isNaN(idx) || idx<0 || idx>=player.friends.length) return alert("Érvénytelen választás.");
+        const friendName = player.friends[idx].n;
+
+        // Offer: coin or card?
+        let offerType = prompt("Mit ajánlasz? Írd be: coin vagy card");
+        if(!offerType) return;
+        offerType = offerType.toLowerCase().trim();
+        let offered = null;
+        if(offerType === 'coin') {
+            let amount = prompt("Hány érme? (szám)");
+            if(!amount) return;
+            amount = parseInt(amount);
+            if(isNaN(amount) || amount <= 0) return alert("Érvénytelen összeg.");
+            if(player.money < amount) return alert("Nincs elég pénzed ehhez.");
+            offered = { type: 'coin', amount: amount };
+        } else if(offerType === 'card') {
+            if(player.deck.length === 0) return alert("Nincsenek lapjaid amivel ajánlkozhatsz.");
+            // list player's deck
+            let list = player.deck.map((c,i)=>`${i+1}: ${c.name} (HP ${c.hp})`).join("\n");
+            let pick = prompt("Válassz a lapjaid közül (szám):\n" + list);
+            if(!pick) return;
+            const pickIdx = parseInt(pick)-1;
+            if(isNaN(pickIdx) || pickIdx<0 || pickIdx>=player.deck.length) return alert("Érvénytelen választás.");
+            const offeredCard = player.deck[pickIdx];
+            offered = { type:'card', cardId: offeredCard.id, cardName: offeredCard.name };
+        } else {
+            return alert("Érvénytelen típus.");
+        }
+
+        // Build trade offer: from = player.username, to = owner of requested card
+        const offer = {
+            id: Date.now().toString() + Math.floor(Math.random()*1000),
+            from: player.username,
+            to: card.owner,
+            offered,
+            requested: { type: 'card', cardId: card.id, cardName: card.name },
+            status: 'pending',
+            createdAt: new Date().toISOString()
+        };
+        tradeOffers.push(offer);
+        localStorage.setItem('ipari_v2_trade_offers', JSON.stringify(tradeOffers));
+        alert("Csereajánlat elküldve: " + card.owner);
+        sync();
+        closeModal();
+        refreshNotifCount();
+    }
+
+    // ---------- NOTIFICATIONS (Trade offers) ----------
+    function refreshNotifCount(){
+        tradeOffers = JSON.parse(localStorage.getItem('ipari_v2_trade_offers') || '[]');
+        const count = tradeOffers.filter(o => o.to === (player ? player.username : "") && o.status === 'pending').length;
+        document.getElementById('notifCount').innerText = count;
+    }
+
+    function openNotifications() {
+        // show modal with offers where to == player.username
+        tradeOffers = JSON.parse(localStorage.getItem('ipari_v2_trade_offers') || '[]');
+        const myOffers = tradeOffers.filter(o => o.to === player.username && o.status === 'pending');
+        if(myOffers.length === 0) return alert("Nincsenek csereajánlataid.");
+        let html = `<h3>Beérkezett csereajánlatok (${myOffers.length})</h3>`;
+        myOffers.forEach((o, i) => {
+            html += `
+                <div style="background:#111; padding:10px; border-radius:10px; margin-top:10px; border:1px solid #222;">
+                    <b>From:</b> ${o.from}<br>
+                    <b>Kért:</b> ${escapeHtml(o.requested.cardName)}<br>
+                    <b>Ajánlat:</b> ${o.offered.type === 'coin' ? o.offered.amount + ' 🪙' : 'Lap: ' + escapeHtml(o.offered.cardName)}<br>
+                    <div style="display:flex; gap:8px; margin-top:8px;">
+                        <button class="btn" onclick="acceptOffer('${o.id}')">✔ Elfogad</button>
+                        <button class="btn btn-red" onclick="rejectOffer('${o.id}')">✖ Elutasít</button>
+                    </div>
+                </div>
+            `;
+        });
+        document.getElementById('modalData').innerHTML = html;
+        document.getElementById('cardModal').classList.remove('hidden');
+    }
+
+    function acceptOffer(offerId) {
+        // find offer
+        tradeOffers = JSON.parse(localStorage.getItem('ipari_v2_trade_offers') || '[]');
+        const idx = tradeOffers.findIndex(o => o.id === offerId);
+        if(idx === -1) return alert("Ajánlat nem található.");
+        const o = tradeOffers[idx];
+        // load accounts of from and to
+        const fromAcc = JSON.parse(localStorage.getItem('ipari_v2_' + o.from.toLowerCase()));
+        const toAcc = JSON.parse(localStorage.getItem('ipari_v2_' + o.to.toLowerCase()));
+        if(!fromAcc || !toAcc) return alert("Egyik fél fiókja nem található.");
+
+        // Check requester (toAcc) actually owns the requested card
+        const requestedCardIndex = toAcc.deck.findIndex(c => c.id === o.requested.cardId);
+        if(requestedCardIndex === -1) {
+            // requested card már nincs nála
+            tradeOffers[idx].status = 'failed';
+            localStorage.setItem('ipari_v2_trade_offers', JSON.stringify(tradeOffers));
+            alert("A kért kártya már nincs meg a feladónak.");
+            refreshNotifCount();
+            closeModal();
+            return;
+        }
+
+        // Perform exchange depending on offered type
+        if(o.offered.type === 'coin') {
+            const amt = o.offered.amount;
+            // check fromAcc has enough coins
+            if(fromAcc.money < amt) {
+                tradeOffers[idx].status = 'failed';
+                localStorage.setItem('ipari_v2_trade_offers', JSON.stringify(tradeOffers));
+                alert("Az ajánló nincs elég érmével.");
+                refreshNotifCount();
+                closeModal();
+                return;
+            }
+            // transfer coins: fromAcc -> toAcc
+            fromAcc.money -= amt;
+            toAcc.money += amt;
+            // transfer card: toAcc -> fromAcc
+            const cardObj = toAcc.deck.splice(requestedCardIndex,1)[0];
+            fromAcc.deck.push(cardObj);
+        } else if(o.offered.type === 'card') {
+            // offered card should be in fromAcc deck
+            const offeredIndex = fromAcc.deck.findIndex(c => c.id === o.offered.cardId);
+            if(offeredIndex === -1) {
+                tradeOffers[idx].status = 'failed';
+                localStorage.setItem('ipari_v2_trade_offers', JSON.stringify(tradeOffers));
+                alert("Az ajánlatban szereplő lap már nincs meg az ajánlónak.");
+                refreshNotifCount();
+                closeModal();
+                return;
+            }
+            // swap cards
+            const offeredCard = fromAcc.deck.splice(offeredIndex,1)[0];
+            const requestedCard = toAcc.deck.splice(requestedCardIndex,1)[0];
+            fromAcc.deck.push(requestedCard);
+            toAcc.deck.push(offeredCard);
+        } else {
+            return alert("Ismeretlen ajánlati típus.");
+        }
+
+        // mark offer accepted
+        tradeOffers[idx].status = 'accepted';
+        localStorage.setItem('ipari_v2_trade_offers', JSON.stringify(tradeOffers));
+        // save accounts
+        localStorage.setItem('ipari_v2_' + fromAcc.username.toLowerCase(), JSON.stringify(fromAcc));
+        localStorage.setItem('ipari_v2_' + toAcc.username.toLowerCase(), JSON.stringify(toAcc));
+
+        // if current logged in player is involved, refresh data
+        if(player.username === fromAcc.username) player = fromAcc;
+        if(player.username === toAcc.username) player = toAcc;
+        sync();
+        alert("Csere sikeres.");
+        refreshNotifCount();
+        closeModal();
+        renderDeck();
+        renderAlbum();
+    }
+
+    function rejectOffer(offerId) {
+        tradeOffers = JSON.parse(localStorage.getItem('ipari_v2_trade_offers') || '[]');
+        const idx = tradeOffers.findIndex(o => o.id === offerId);
+        if(idx === -1) return alert("Ajánlat nem található.");
+        tradeOffers[idx].status = 'rejected';
+        localStorage.setItem('ipari_v2_trade_offers', JSON.stringify(tradeOffers));
+        alert("Ajánlat elutasítva.");
+        refreshNotifCount();
+        closeModal();
+    }
+
+    // ---------- FRIENDS ----------
     function inviteFriend() {
         const code = btoa(JSON.stringify({n: player.username, d: player.deck.slice(0,3), p: player.pPic}));
         navigator.clipboard.writeText(code);
@@ -175,81 +566,163 @@
                 if(!player.friends.find(f => f.n === fData.n)) {
                     player.friends.push(fData);
                     sync(); renderFriends();
-                }
+                } else alert("Már hozzáadva.");
             } catch(e) { alert("Hiba a kóddal!"); }
         }
     }
 
     function renderFriends() {
         const list = document.getElementById('friendsList');
-        list.innerHTML = player.friends.length ? "" : "<p>Nincsenek barátok.</p>";
+        list.innerHTML = "";
+        if(player.friends.length === 0) { list.innerHTML = "<p>Nincsenek barátok.</p>"; return; }
         player.friends.forEach((f, i) => {
             list.innerHTML += `
-                <div style="background:#1a1a1a; padding:15px; border-radius:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border: 1px solid #333;">
-                    <span><b>${f.n}</b></span>
-                    <button class="btn btn-blue" style="width:auto; margin:0;" onclick="alert('${f.n} lapjai: ' + '${f.d.map(ld => ld.name).join(', ')}')">LAPOK</button>
+                <div class="friend-row">
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <img src="${f.p||'https://via.placeholder.com/60'}" style="width:60px;height:60px;border-radius:10px;object-fit:cover;border:2px solid #333;">
+                        <div>
+                            <div style="font-weight:bold;">${f.n}</div>
+                            <div class="small">${(f.d && f.d.length ? f.d.map(dd=>dd.name).slice(0,3).join(', ') : 'Nincsenek lapok (preview)')}</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-blue" style="width:auto; margin:0;" onclick="viewFriend(${i})">Megnéz</button>
+                        <button class="btn" style="width:auto; margin:0;" onclick="removeFriend(${i})">Törlés</button>
+                    </div>
                 </div>`;
         });
     }
 
-    // ALAP FUNKCIÓK (Készítő, Kép betöltés, Mentés)
-    function ask(id, txt) {
-        let val = prompt(txt);
-        if(val) {
-            document.getElementById(id).value = val;
-            if(id === 'eHpVal') document.getElementById('eHp').innerText = "HP " + val;
-            if(id === 'eNameVal') document.getElementById('eName').innerText = val;
-            if(id === 'eAdvVal') document.getElementById('eAdv').innerText = val;
-        }
+    function removeFriend(i) {
+        if(!confirm("Biztos?")) return;
+        player.friends.splice(i,1);
+        sync();
+        renderFriends();
     }
 
-    function loadCardImg(i) {
-        const r = new FileReader();
-        r.onload=(e)=>{ tempImg=e.target.result; document.getElementById('eImg').src=tempImg; document.getElementById('eImg').style.display='block'; };
-        r.readAsDataURL(i.files[0]);
+    // Friend profile page
+    function viewFriend(i) {
+        const f = player.friends[i];
+        if(!f) return;
+        // try to load full account if exists in localStorage
+        const acc = JSON.parse(localStorage.getItem('ipari_v2_' + f.n.toLowerCase()));
+        let cards = acc ? acc.deck : (f.d || []);
+        document.getElementById('fPicBig').src = (acc && acc.pPic) ? acc.pPic : (f.p || 'https://via.placeholder.com/100');
+        document.getElementById('fNameBig').innerText = f.n;
+        const container = document.getElementById('fCards');
+        container.innerHTML = "";
+        if(cards.length === 0) container.innerHTML = "<p style='color:#999;'>Nincsenek kártyák.</p>";
+        cards.forEach(c => {
+            container.innerHTML += `
+                <div class="album-card" onclick="openAnyCard('${c.id}','${c.owner||f.n}')">
+                    <img src="${c.img}">
+                    <div style="font-weight:bold;">${escapeHtml(c.name)}</div>
+                    <div style="font-size:12px; color:#ccc;">HP ${c.hp}</div>
+                </div>
+            `;
+        });
+        // switch to friend profile view
+        document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+        document.getElementById('friendProfilePage').classList.remove('hidden');
     }
 
+    function backFromFriend(){
+        tab('friendsPage', document.querySelectorAll('.nav-item')[2]);
+    }
+
+    // ---------- PROFILE PIC ----------
     function loadProfilePic(i) {
         const r = new FileReader();
         r.onload=(e)=>{ player.pPic=e.target.result; document.getElementById('pPic').src=player.pPic; sync(); };
         r.readAsDataURL(i.files[0]);
     }
 
-    function saveNewCard() {
-        if(!tempImg || !document.getElementById('eNameVal').value) return alert("Név és kép kell!");
-        if(player.money < 50) return alert("Nincs elég pénzed!");
-        player.money -= 50;
-        player.deck.push({ name: document.getElementById('eNameVal').value, hp: document.getElementById('eHpVal').value || 0, adv: document.getElementById('eAdvVal').value || "", img: tempImg });
-        sync(); tab('deckPage');
-    }
-
-    function renderDeck() {
-        const l = document.getElementById('deckList');
-        l.innerHTML = "";
-        player.deck.forEach((c, i) => {
-            l.innerHTML += `
-                <div class="big-card" onclick="openCard(${i})">
-                    <div class="hp-badge">HP ${c.hp}</div>
-                    <div style="font-size:18px; font-weight:bold; margin-bottom:8px;">${c.name}</div>
-                    <img src="${c.img}">
-                    <div style="margin-top:8px; font-size:12px; background:rgba(255,255,255,0.2); padding:8px; border-radius:8px;">${c.adv}</div>
-                </div>`;
-        });
+    // ---------- SHOP / EVENT ----------
+    function claimDaily() {
+        const last = player.shopLastClaim ? new Date(player.shopLastClaim) : null;
+        const today = new Date();
+        if(last && last.toDateString() === today.toDateString()) return alert("Már igényelted a napi rewardot ma.");
+        player.money += 100;
+        player.shopLastClaim = today.toISOString();
+        sync();
+        alert("Megkaptad a napi 100 🪙-t!");
         updateUI();
     }
 
+    function renderEventInfo(){
+        // initialize event start if null
+        if(!player.eventStart) {
+            document.getElementById('eventInfo').innerText = "Event kezdete: még nem indult. Kattints az 'Event claim' gombra a kezdéshez.";
+            return;
+        }
+        const start = new Date(player.eventStart);
+        const now = new Date();
+        const daysPassed = Math.floor((now - start)/(1000*60*60*24)) + 1; // 1-based
+        const currentDay = Math.min(daysPassed, 7);
+        document.getElementById('eventInfo').innerText = `Event nap: ${currentDay} / 7. Már felvett napok: ${player.eventDay}. Következő claim összeg: ${ (player.eventDay+1) <=7 ? ((player.eventDay+1)*100) + ' 🪙' : 'Minden nap igényelve.' }`;
+    }
+
+    function claimEvent() {
+        const today = new Date();
+        if(!player.eventStart) {
+            // start event
+            player.eventStart = today.toISOString();
+            player.eventDay = 0;
+        }
+        const start = new Date(player.eventStart);
+        const daysPassed = Math.floor((today - start)/(1000*60*60*24)) + 1; // 1-based
+        if(daysPassed > 7) return alert("A 7 napos event lejárt. Újraindíthatod a kezdés gombbal.");
+        if(player.eventDay >= daysPassed) return alert("A mai napi event már igényelve vagy még nem elérhető.");
+        const toGive = (player.eventDay+1)*100;
+        player.money += toGive;
+        player.eventDay += 1;
+        sync();
+        alert(`Megkaptad: ${toGive} 🪙 (Event nap: ${player.eventDay})`);
+        renderEventInfo();
+        updateUI();
+    }
+
+    // ---------- UTILITY ----------
+    function escapeHtml(text) {
+        if(!text) return "";
+        return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ---------- TRADE OFFERS LOAD ON START ----------
+    window.addEventListener('load', ()=> {
+        globalCards = JSON.parse(localStorage.getItem('ipari_v2_global') || '[]');
+        tradeOffers = JSON.parse(localStorage.getItem('ipari_v2_trade_offers') || '[]');
+    });
+
+    // ---------- HELPER: openAnyCard when modal actions may change data ----------
+    // keep existing functions sellCard and upgradeCard for in-deck actions compatibility
+    function sellCard(i) {
+        // wrapper kept for compatibility when called with index number (from old code)
+        // we now expect id string; if i is number treat as index
+        if(typeof i === 'number') {
+            // sell player's deck item at index i for 75 as old behaviour; but user requested 50 for album sell -> keep both available:
+            if(!player.deck[i]) return;
+            player.money += 75;
+            player.deck.splice(i,1);
+            sync();
+            renderDeck();
+            return;
+        }
+        // if string id:
+        sellCardModal(i);
+    }
+
     function upgradeCard(i) {
+        // old upgrade logic (by index) preserved
         if(player.money < 150) return alert("Nincs elég pénzed!");
         player.money -= 150;
         player.deck[i].hp = parseInt(player.deck[i].hp) + 100;
         sync(); document.getElementById('cardModal').classList.add('hidden'); renderDeck();
     }
 
-    function sellCard(i) {
-        player.money += 75;
-        player.deck.splice(i, 1);
-        sync(); document.getElementById('cardModal').classList.add('hidden'); renderDeck();
-    }
+    // ensure notif count updates when showing pages periodically
+    setInterval(()=>{ if(player) refreshNotifCount(); }, 5000);
+
 </script>
 </body>
-</html> 
+</html>
