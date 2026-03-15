@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ipari Card Game v3</title>
+<title>Ipari 1v1</title>
 <style>
 body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding-bottom: 100px; }
 .hidden { display: none !important; }
@@ -16,7 +16,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; m
 .big-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; border: 2px solid #333; background: white; }
 .hp-badge { float: right; color: #d32f2f; font-weight: bold; font-size: 18px; }
 
-.album, .shop-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 20px; }
+.album, .deck-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 20px; }
 .card { background:#1a1a1a; border-radius:15px; padding:10px; }
 .card img { width:100%; border-radius:10px; }
 
@@ -77,27 +77,28 @@ body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; m
             <option value="Exotic">Exotic</option>
         </select>
         <input type="file" id="fileIn" class="hidden" onchange="loadCardImg(this)">
-        <input type="hidden" id="eNameVal"><input type="hidden" id="eHpVal"><input type="hidden" id="eAdvVal">
+        <input type="hidden" id="eNameVal"><input type="hidden" id="eHpVal">
     </div>
     <button class="btn" onclick="saveNewCard()">KÁRTYA MENTÉSE (50 🪙)</button>
 </div>
 
-<div id="shopPage" class="page hidden">
-    <h2>🛒 Shop</h2>
-    <div id="shopGrid" class="shop-grid"></div>
+<div id="friendsPage" class="page hidden">
+    <h2>👥 Barátok</h2>
+    <button class="btn btn-blue" onclick="inviteFriend()">SAJÁT KÓD MÁSOLÁSA</button>
+    <button class="btn" onclick="addFriend()">BARÁT HOZZÁADÁSA</button>
+    <div id="friendsList" style="margin-top:20px; text-align: left;"></div>
 </div>
 
 <nav class="navbar hidden" id="menu">
     <button class="nav-item active" onclick="tab('deckPage', this)">🎒 Pakli</button>
     <button class="nav-item" onclick="tab('editorPage', this)">🎨 Készítő</button>
-    <button class="nav-item" onclick="tab('shopPage', this)">🛒 Shop</button>
+    <button class="nav-item" onclick="tab('friendsPage', this)">👥 Barátok</button>
 </nav>
 
 <script>
 let player = null;
 let tempImg = "";
 
-// Bejelentkezés
 function auth() {
     const u = document.getElementById('uName').value.trim().toLowerCase();
     const p = document.getElementById('uPass').value;
@@ -107,7 +108,7 @@ function auth() {
         if(data.password !== p) return alert("Hibás jelszó!");
         player = data;
     } else {
-        player = { username: u, password: p, money: 500, deck: [] };
+        player = { username: u, password: p, money: 500, deck: [], friends: [] };
     }
     document.getElementById('loginPage').classList.add('hidden');
     document.getElementById('menu').classList.remove('hidden');
@@ -115,24 +116,19 @@ function auth() {
     updateUI();
 }
 
-// LocalStorage sync
 function sync() { localStorage.setItem('ipari_v2_' + player.username.toLowerCase(), JSON.stringify(player)); }
 
-function updateUI() {
-    document.getElementById('coinCount').innerText = player.money;
-}
+function updateUI() { document.getElementById('coinCount').innerText = player.money; }
 
-// Tab
 function tab(id, btn) {
     document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
     document.getElementById(id).classList.remove('hidden');
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     if(btn) btn.classList.add('active');
     if(id === 'deckPage') renderDeck();
-    if(id === 'shopPage') renderShop();
+    if(id === 'friendsPage') renderFriends();
 }
 
-// Kártya létrehozása
 function ask(id, txt) {
     let val = prompt(txt);
     if(val) {
@@ -157,7 +153,6 @@ function saveNewCard() {
     sync(); tab('deckPage');
 }
 
-// Render deck
 function renderDeck() {
     const l = document.getElementById('deckList');
     l.innerHTML = "";
@@ -173,7 +168,6 @@ function renderDeck() {
     updateUI();
 }
 
-// Kártya nagyítás modal
 function openCard(i) {
     const c = player.deck[i];
     const modal = document.getElementById('cardModal');
@@ -189,48 +183,42 @@ function openCard(i) {
     `;
 }
 
-// Eladás
 function sellCard(i) {
     player.money += 75;
     player.deck.splice(i, 1);
     sync(); document.getElementById('cardModal').classList.add('hidden'); renderDeck();
 }
 
-// Shop
-function renderShop() {
-    const shopGrid = document.getElementById('shopGrid');
-    shopGrid.innerHTML = "";
-    // egyszerű példa 3 lapra
-    const shopCards = [
-        { name: "Fire Dragon", hp: 200, rarity: "Epic", price: 100 },
-        { name: "Water Sprite", hp: 120, rarity: "Rare", price: 50 },
-        { name: "Earth Golem", hp: 300, rarity: "Legendary", price: 150 }
-    ];
-    shopCards.forEach((c, i)=>{
-        shopGrid.innerHTML += `
-        <div class="card">
-            <h3>${c.name}</h3>
-            <div>${c.rarity}</div>
-            <p>HP ${c.hp}</p>
-            <button class="btn" onclick="buyCard(${i})">Vásárlás (${c.price} 🪙)</button>
-        </div>
-        `;
+function inviteFriend() {
+    const code = btoa(JSON.stringify({n: player.username, d: player.deck.slice(0,3)}));
+    navigator.clipboard.writeText(code);
+    alert("Kód kimásolva!");
+}
+
+function addFriend() {
+    let code = prompt("Másold be a barátod kódját:");
+    if(code) {
+        try {
+            let fData = JSON.parse(atob(code));
+            if(!player.friends.find(f => f.n === fData.n)) {
+                player.friends.push(fData);
+                sync(); renderFriends();
+            }
+        } catch(e) { alert("Hiba a kóddal!"); }
+    }
+}
+
+function renderFriends() {
+    const list = document.getElementById('friendsList');
+    list.innerHTML = player.friends.length ? "" : "<p>Nincsenek barátok.</p>";
+    player.friends.forEach((f, i) => {
+        list.innerHTML += `
+            <div style="background:#1a1a1a; padding:15px; border-radius:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border: 1px solid #333;">
+                <span><b>${f.n}</b></span>
+                <button class="btn btn-blue" style="width:auto; margin:0;" onclick="alert('${f.n} lapjai: ' + '${f.d.map(ld => ld.name).join(', ')}')">LAPOK</button>
+            </div>`;
     });
 }
-
-function buyCard(i) {
-    const shopCards = [
-        { name: "Fire Dragon", hp: 200, rarity: "Epic", price: 100, img:"https://via.placeholder.com/150" },
-        { name: "Water Sprite", hp: 120, rarity: "Rare", price: 50, img:"https://via.placeholder.com/150" },
-        { name: "Earth Golem", hp: 300, rarity: "Legendary", price: 150, img:"https://via.placeholder.com/150" }
-    ];
-    const c = shopCards[i];
-    if(player.money < c.price) return alert("Nincs elég pénzed!");
-    player.money -= c.price;
-    player.deck.push({ name: c.name, hp: c.hp, rarity: c.rarity, img: c.img });
-    sync(); updateUI(); renderDeck();
-}
 </script>
-
 </body>
 </html>
