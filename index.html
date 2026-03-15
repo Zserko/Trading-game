@@ -3,182 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ipari 1v1 - Javított Verzió</title>
+    <title>Ipari 1v1</title>
     <style>
         :root { --common: #888; --uncommon: #2ecc71; --rare: #3498db; --epic: #9b59b6; --legendary: #f1c40f; }
-        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding-top: 70px; padding-bottom: 110px; overflow-x: hidden; }
+        body { font-family: sans-serif; background: #0a0a0a; color: white; margin: 0; padding-top: 60px; padding-bottom: 100px; }
         .hidden { display: none !important; }
         
-        .top-bar { position: fixed; top: 0; left: 0; width: 100%; background: #ffcb05; color: #111; padding: 12px 0; font-weight: 900; text-align: center; z-index: 2000; box-shadow: 0 2px 10px rgba(0,0,0,0.5); font-size: 18px; }
-        .page { padding: 15px; text-align: center; min-height: 100vh; box-sizing: border-box; }
+        /* Felső sáv */
+        .top-bar { position: fixed; top: 0; width: 100%; background: #ffcb05; color: #111; padding: 15px; text-align: center; font-weight: bold; z-index: 100; box-sizing: border-box; }
         
-        /* KÁRTYA RÁCS */
-        .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 10px; }
-        .mini-card { aspect-ratio: 2.5/3.8; background: #1a1a1a; border: 2px solid var(--common); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; }
-        .mini-card img { width: 100%; height: 55%; object-fit: cover; }
-        .mini-content { padding: 4px; font-size: 9px; text-align: left; }
+        .page { padding: 20px; text-align: center; }
+        
+        /* Készítő kártya box */
+        .preview-card { 
+            background: #1a1a1a; border: 4px solid var(--common); border-radius: 15px; 
+            width: 260px; aspect-ratio: 2.5/3.8; margin: 0 auto 20px; padding: 10px; 
+            text-align: left; position: relative; overflow: hidden;
+        }
+        .img-box { width: 100%; height: 160px; background: #000; position: relative; overflow: hidden; border-radius: 8px; cursor: move; touch-action: none; }
+        .img-box img { position: absolute; width: 100%; }
 
-        /* EDITOR KÁRTYA */
-        .big-card { background: #1a1a1a; border: 5px solid var(--common); border-radius: 20px; padding: 15px; width: 280px; aspect-ratio: 2.5/3.8; text-align: left; position: relative; overflow: hidden; margin: 0 auto; }
-        .img-container { width: 100%; height: 180px; border-radius: 10px; background: #111; overflow: hidden; position: relative; cursor: move; touch-action: none; }
-        .img-container img { position: absolute; width: 100%; }
-
-        /* NAVIGÁCIÓ */
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 15px 0; border-top: 3px solid #222; z-index: 1000; }
-        .nav-item { color: #666; background: none; border: none; font-size: 11px; font-weight: bold; cursor: pointer; }
+        /* Alsó menü */
+        .navbar { position: fixed; bottom: 0; width: 100%; background: #111; display: flex; border-top: 2px solid #333; }
+        .nav-item { flex: 1; padding: 15px; color: #777; border: none; background: none; font-size: 12px; cursor: pointer; }
         .nav-item.active { color: #ffcb05; }
 
-        .btn { background: #ffcb05; color: #111; border: none; padding: 14px; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
-        input, select { width: 85%; padding: 12px; margin-top: 10px; background: #111; color: white; border: 1px solid #333; border-radius: 10px; }
+        input, select { width: 90%; padding: 12px; margin: 8px 0; background: #1a1a1a; color: white; border: 1px solid #333; border-radius: 8px; }
+        .btn { background: #ffcb05; color: #111; border: none; padding: 15px; width: 90%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div id="topBar" class="top-bar hidden">Pénz: <span id="globalMoney">0</span> 🪙</div>
+<div id="topBar" class="top-bar hidden">Pénz: <span id="moneySpan">500</span> 🪙</div>
 
-<!-- LOGIN -->
+<!-- BELÉPÉS -->
 <div id="loginPage" class="page">
-    <h1 style="color:#ffcb05; margin-top:50px;">Ipari 1v1</h1>
-    <p>Add meg a adataidat a kezdéshez!</p>
+    <h1 style="color:#ffcb05">Ipari 1v1</h1>
     <input type="text" id="uName" placeholder="Felhasználónév">
     <input type="password" id="uPass" placeholder="Jelszó">
-    <button class="btn" style="width:85%" onclick="auth()">BELÉPÉS</button>
+    <button class="btn" onclick="auth()">BELÉPÉS</button>
 </div>
 
-<!-- EDITOR -->
+<!-- KÉSZÍTŐ (EDITOR) -->
 <div id="editorPage" class="page hidden">
-    <h2 style="color:#ffcb05">Készítő</h2>
-    <div class="big-card" id="preview">
-        <div id="pRare" style="font-size:11px; color:#888;">Common</div>
-        <div id="pHPText" style="float:right; color:#ff4444; font-weight:bold;">HP 0</div>
-        <div id="pNameText" style="font-weight:bold; font-size:18px; margin: 5px 0;">Név...</div>
-        <div class="img-container" id="cropBox">
-            <img id="eImg" style="display:none; top:0; left:0;">
-            <span id="plus" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%); color:#666;">Nincs kép</span>
+    <div class="preview-card" id="cardStyle">
+        <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold;">
+            <span id="pRare">COMMON</span>
+            <span id="pHP" style="color:#ff4444">HP 0</span>
         </div>
-        <div id="pDescText" style="margin-top:10px; font-size:12px; color:#bbb;">Leírás...</div>
+        <div id="pName" style="font-size:18px; font-weight:bold; margin: 5px 0;">Név...</div>
+        <div class="img-box" id="dragArea">
+            <img id="pImg" style="display:none;">
+            <div id="noImg" style="text-align:center; padding-top:60px; color:#444;">Válassz képet!</div>
+        </div>
+        <div id="pDesc" style="font-size:12px; color:#aaa; margin-top:10px;">Leírás...</div>
     </div>
+
+    <button class="btn" style="background:#444; color:white;" onclick="document.getElementById('fileIn').click()">KÉP FELTÖLTÉSE</button>
+    <input type="file" id="fileIn" class="hidden" accept="image/*" onchange="loadFile(this)">
     
-    <button class="btn" style="background:#333; color:white; width:90%;" onclick="document.getElementById('fileIn').click()">KÉP KIVÁLASZTÁSA</button>
-    <input type="file" id="fileIn" class="hidden" accept="image/*" onchange="loadImg(this)">
-    
-    <input type="text" id="iName" placeholder="Kártya neve" oninput="sync()">
-    <input type="number" id="iHP" placeholder="HP szinte (pl: 100)" oninput="sync()">
-    <input type="text" id="iDesc" placeholder="Képesség leírása" oninput="sync()">
-    <select id="iRare" onchange="sync()">
-        <option value="Common">Common (Szürke)</option>
-        <option value="Uncommon">Uncommon (Zöld)</option>
-        <option value="Rare">Rare (Kék)</option>
-        <option value="Epic">Epic (Lila)</option>
-        <option value="Legendary">Legendary (Arany)</option>
+    <input type="text" id="iName" placeholder="Kártya neve" oninput="live()">
+    <input type="number" id="iHP" placeholder="HP" oninput="live()">
+    <input type="text" id="iDesc" placeholder="Képesség" oninput="live()">
+    <select id="iRare" onchange="live()">
+        <option value="Common">Common</option>
+        <option value="Uncommon">Uncommon</option>
+        <option value="Rare">Rare</option>
+        <option value="Epic">Epic</option>
+        <option value="Legendary">Legendary</option>
     </select>
-    <button class="btn" onclick="saveCard()">MENTÉS ÉS KÉSZÍTÉS (50 🪙)</button>
+    <button class="btn" onclick="save()">MENTÉS (50 🪙)</button>
 </div>
 
-<!-- TÖBBI OLDAL (ÜRES HELYKITÖLTŐK) -->
-<div id="deckPage" class="page hidden"><h2 style="color:#ffcb05">Saját Paklid</h2><div id="deckList" class="card-grid"></div></div>
-<div id="albumPage" class="page hidden"><h2 style="color:#ffcb05">Világ Album</h2><div id="albumList" class="card-grid"></div></div>
-<div id="shopPage" class="page hidden"><h2>Bolt</h2><p>Hamarosan...</p></div>
-<div id="friendsPage" class="page hidden"><h2>Barátok</h2><p>Nincsenek még barátok.</p></div>
-<div id="profilePage" class="page hidden"><h2>Profil</h2><button class="btn" style="background:red; color:white;" onclick="location.reload()">Kijelentkezés</button></div>
+<!-- PAKLI -->
+<div id="deckPage" class="page hidden">
+    <h2>Saját kártyáid</h2>
+    <div id="deckList"></div>
+</div>
 
-<nav class="navbar hidden" id="menu">
-    <button class="nav-item" onclick="tab('deckPage', this)">🎒 Pakli</button>
-    <button class="nav-item" onclick="tab('albumPage', this)">📖 Album</button>
-    <button class="nav-item" onclick="tab('editorPage', this)">🎨 Készítő</button>
-    <button class="nav-item" onclick="tab('shopPage', this)">🛒 Bolt</button>
-    <button class="nav-item" onclick="tab('profilePage', this)">👤 Profil</button>
+<!-- MENÜ -->
+<nav id="menu" class="navbar hidden">
+    <button class="nav-item" onclick="tab('deckPage')">🎒 Pakli</button>
+    <button class="nav-item active" onclick="tab('editorPage')">🎨 Készítő</button>
+    <button class="nav-item" onclick="location.reload()">👤 Kilépés</button>
 </nav>
 
 <script>
-    let player, posX=0, posY=0, startX=0, startY=0, isDragging=false;
-    const G_KEY = "global_cards_v18";
+    let player = null;
+    let posX = 0, posY = 0, startX = 0, startY = 0, dragging = false;
 
+    // BELÉPÉS FUNKCIÓ
     function auth() {
-        const u = document.getElementById('uName').value.trim().toUpperCase();
+        const u = document.getElementById('uName').value.trim();
         const p = document.getElementById('uPass').value;
+        if(!u || !p) return alert("Írj be mindent!");
+
+        // Egyszerűsített mentés
+        player = { name: u, money: 500, deck: [] };
         
-        if(!u || !p) {
-            alert("Írd be a neved és a jelszót!");
-            return;
-        }
-
-        let saved = localStorage.getItem('u_'+u);
-        if(saved) {
-            let data = JSON.parse(saved);
-            if(data.password === p) {
-                player = data;
-            } else {
-                alert("Hibás jelszó ehhez a névhez!");
-                return;
-            }
-        } else {
-            // Új profil
-            player = { username: u, password: p, money: 500, deck: [], uid: "ID-"+Math.floor(Math.random()*999) };
-            localStorage.setItem('u_'+u, JSON.stringify(player));
-        }
-
         document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('topBar').classList.remove('hidden');
         document.getElementById('menu').classList.remove('hidden');
-        tab('deckPage');
+        document.getElementById('topBar').classList.remove('hidden');
+        tab('editorPage');
     }
 
-    function tab(id, b) {
+    // FÜL VÁLTÁS
+    function tab(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-        const target = document.getElementById(id);
-        if(target) target.classList.remove('hidden');
-
-        if(b) {
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            b.classList.add('active');
-        }
-        document.getElementById('globalMoney').innerText = player.money;
-        if(id === 'deckPage') drawCards('deckList', false);
-        if(id === 'albumPage') drawCards('albumList', true);
+        document.getElementById(id).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     }
 
-    function sync() {
-        document.getElementById('pNameText').innerText = document.getElementById('iName').value || "Név...";
-        document.getElementById('pHPText').innerText = "HP " + (document.getElementById('iHP').value || "0");
-        document.getElementById('pDescText').innerText = document.getElementById('iDesc').value || "Leírás...";
+    // ÉLŐ SZINKRONIZÁLÁS (Ami beírsz, azonnal látszik)
+    function live() {
+        document.getElementById('pName').innerText = document.getElementById('iName').value || "Név...";
+        document.getElementById('pHP').innerText = "HP " + (document.getElementById('iHP').value || "0");
+        document.getElementById('pDesc').innerText = document.getElementById('iDesc').value || "Leírás...";
+        
         const rare = document.getElementById('iRare').value;
-        document.getElementById('pRare').innerText = rare;
-        document.getElementById('preview').style.borderColor = `var(--${rare.toLowerCase()})`;
+        document.getElementById('pRare').innerText = rare.toUpperCase();
+        document.getElementById('cardStyle').style.borderColor = `var(--${rare.toLowerCase()})`;
     }
 
-    function loadImg(input) {
+    // KÉP BETÖLTÉSE
+    function loadFile(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = document.getElementById('eImg');
+            reader.onload = function(e) {
+                const img = document.getElementById('pImg');
                 img.src = e.target.result;
                 img.style.display = "block";
-                document.getElementById('plus').style.display = "none";
-                posX=0; posY=0; img.style.left="0px"; img.style.top="0px";
-            }
+                document.getElementById('noImg').style.display = "none";
+                posX = 0; posY = 0; img.style.top = "0px"; img.style.left = "0px";
+            };
             reader.readAsDataURL(input.files[0]);
         }
     }
 
-    // Drag & Drop a képernyőn a képnek
-    const cropBox = document.getElementById('cropBox');
-    const handleMove = (e) => {
-        if(!isDragging) return;
-        const ev = e.touches ? e.touches[0] : e;
-        posX = ev.clientX - startX;
-        posY = ev.clientY - startY;
-        document.getElementById('eImg').style.left = posX + "px";
-        document.getElementById('eImg').style.top = posY + "px";
-    };
-    cropBox.onmousedown = cropBox.ontouchstart = (e) => {
-        isDragging = true;
+    // KÉP MOZGATÁSA
+    const area = document.getElementById('dragArea');
+    area.onmousedown = area.ontouchstart = (e) => {
+        dragging = true;
         const ev = e.touches ? e.touches[0] : e;
         startX = ev.clientX - posX;
         startY = ev.clientY - posY;
     };
-    window.onmousemove = window.ontouchmove = handleMove;
-    window.onmouseup = window.ontouchend = () => isDragging = false;
+    window.onmousemove = window.ontouchmove = (e) => {
+        if(!dragging) return;
+        const ev = e.touches ? e.touches[0] : e;
+        posX = ev.clientX - startX;
+        posY = ev.clientY - startY;
+        document.getElementById('pImg').style.left = posX + "px";
+        document.getElementById('pImg').style.top = posY + "px";
+    };
+    window.onmouseup = window.ontouchend = () => dragging = false;
 
-    function saveCard() {
-        if(player.money < 
+    // MENTÉS
+    function save() {
+        if(player.money < 50) return alert("Nincs elég pénzed!");
+        if(!document.getElementById('iName').value) return alert("Adj nevet a kártyának!");
+        
+        player.money -= 50;
+        document.getElementById('moneySpan').innerText = player.money;
+        alert("Kártya elmentve a paklidba!");
+        tab('deckPage');
+    }
+</script>
+
+</body>
+</html>
