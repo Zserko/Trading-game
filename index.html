@@ -10,8 +10,8 @@ body{
 background:#0a0a0a;
 color:white;
 font-family:Arial;
-margin:0;
 text-align:center;
+margin:0;
 }
 
 header{
@@ -23,6 +23,47 @@ font-size:22px;
 .container{
 padding:20px;
 }
+
+input{
+padding:10px;
+margin:5px;
+border-radius:8px;
+border:none;
+}
+
+button{
+padding:10px 15px;
+border:none;
+border-radius:10px;
+background:#ffcb05;
+cursor:pointer;
+margin:5px;
+font-weight:bold;
+}
+
+.album{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
+margin-top:20px;
+}
+
+.card{
+background:#1a1a1a;
+border-radius:15px;
+padding:10px;
+}
+
+.card img{
+width:100%;
+border-radius:10px;
+}
+
+.hidden{
+display:none;
+}
+
+/* VERSION */
 
 .versionTop{
 position:fixed;
@@ -44,83 +85,6 @@ border-radius:10px;
 font-size:12px;
 }
 
-button{
-padding:10px 15px;
-border:none;
-border-radius:10px;
-background:#ffcb05;
-cursor:pointer;
-margin:5px;
-font-weight:bold;
-}
-
-input,select{
-padding:10px;
-margin:5px;
-border-radius:8px;
-border:none;
-}
-
-.album{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:15px;
-margin-top:20px;
-}
-
-.card{
-background:linear-gradient(145deg,#ffd700,#ff9d00);
-border-radius:20px;
-padding:10px;
-color:black;
-font-weight:bold;
-}
-
-.card img{
-width:100%;
-border-radius:12px;
-}
-
-.rarity{
-font-size:12px;
-margin-top:5px;
-}
-
-.hidden{
-display:none;
-}
-
-#cardView{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:black;
-z-index:999;
-}
-
-.back{
-position:absolute;
-top:15px;
-left:15px;
-background:#333;
-color:white;
-}
-
-.shop{
-display:flex;
-justify-content:center;
-gap:20px;
-margin-top:20px;
-}
-
-.chest{
-background:#222;
-padding:20px;
-border-radius:15px;
-}
-
 </style>
 
 </head>
@@ -135,12 +99,15 @@ border-radius:15px;
 
 <div id="login">
 
+<h2>Bejelentkezés</h2>
+
 <input id="email" placeholder="email">
 <br>
 <input id="password" type="password" placeholder="jelszó">
 
 <br>
 
+<button onclick="register()">Regisztráció</button>
 <button onclick="login()">Belépés</button>
 
 <div class="versionLogin">v2</div>
@@ -149,60 +116,22 @@ border-radius:15px;
 
 <div id="game" class="hidden">
 
-<h3 id="coinsText">0 coin</h3>
-
 <h2>Kártya készítés</h2>
 
-<input id="cardName" placeholder="Név">
+<input id="cardName" placeholder="Kártya neve">
 <input id="cardHP" placeholder="HP">
 <input id="cardImg" placeholder="Kép URL">
 
-<select id="rarity">
-<option>Common</option>
-<option>Uncommon</option>
-<option>Rare</option>
-<option>Epic</option>
-<option>Legendary</option>
-<option>Mythic</option>
-<option>Exotic</option>
-</select>
-
 <br>
 
-<button onclick="createCard()">Mentés</button>
+<button onclick="createCard()">Kártya mentése</button>
 
 <h2>Album</h2>
 
 <div id="album" class="album"></div>
 
-<h2>Shop</h2>
-
-<input id="creator" placeholder="Creator Code">
-<button onclick="useCode()">Redeem</button>
-
-<div class="shop">
-
-<div class="chest">
-<button onclick="openChest(1)">Chest</button>
 </div>
 
-<div class="chest">
-<button onclick="openChest(2)">Big Chest</button>
-</div>
-
-<div class="chest">
-<button onclick="openChest(3)">Mega Chest</button>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div id="cardView" class="hidden">
-<button class="back" onclick="closeCard()">⬅</button>
-<div id="bigCard"></div>
 </div>
 
 <script type="module">
@@ -211,6 +140,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 
 import {
 getAuth,
+createUserWithEmailAndPassword,
 signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -218,55 +148,71 @@ import {
 getFirestore,
 collection,
 addDoc,
-getDocs,
-deleteDoc,
-doc
+getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
 
-apiKey: "IDE_APIKEY",
-authDomain: "IDE_AUTHDOMAIN",
-projectId: "IDE_PROJECTID",
-storageBucket: "IDE_STORAGE",
-messagingSenderId: "IDE_ID",
-appId: "IDE_APP"
+apiKey: "IDE_A_SAJAT_APIKEY",
+authDomain: "IDE_A_SAJAT_AUTHDOMAIN",
+projectId: "IDE_A_SAJAT_PROJECTID",
+storageBucket: "IDE_A_SAJAT_STORAGE",
+messagingSenderId: "IDE_A_SAJAT_ID",
+appId: "IDE_A_SAJAT_APPID"
 
 };
 
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
+
 const db = getFirestore(app);
 
-let coins=0
-
-window.login=async()=>{
+window.register = async function(){
 
 const email=document.getElementById("email").value
+
+const password=document.getElementById("password").value
+
+await createUserWithEmailAndPassword(auth,email,password)
+
+alert("Sikeres regisztráció")
+
+}
+
+window.login = async function(){
+
+const email=document.getElementById("email").value
+
 const password=document.getElementById("password").value
 
 await signInWithEmailAndPassword(auth,email,password)
 
-login.classList.add("hidden")
-game.classList.remove("hidden")
+document.getElementById("login").classList.add("hidden")
+
+document.getElementById("game").classList.remove("hidden")
 
 loadCards()
 
 }
 
-window.createCard=async()=>{
+window.createCard = async function(){
 
-const name=cardName.value
-const hp=cardHP.value
-const img=cardImg.value
-const rarity=rarity.value
+const name=document.getElementById("cardName").value
+
+const hp=document.getElementById("cardHP").value
+
+const img=document.getElementById("cardImg").value
 
 await addDoc(collection(db,"cards"),{
-name,
-hp,
-img,
-rarity
+
+name:name,
+hp:hp,
+img:img
+
 })
+
+alert("Kártya mentve")
 
 loadCards()
 
@@ -276,98 +222,29 @@ async function loadCards(){
 
 const snapshot=await getDocs(collection(db,"cards"))
 
+const album=document.getElementById("album")
+
 album.innerHTML=""
 
-snapshot.forEach(docu=>{
+snapshot.forEach(doc=>{
 
-const c=docu.data()
-
-if(c.name=="zoli"){ 
-deleteDoc(doc(db,"cards",docu.id))
-return
-}
+const c=doc.data()
 
 album.innerHTML+=`
 
-<div class="card" onclick="openCard('${c.name}','${c.img}','${c.hp}','${c.rarity}')">
+<div class="card">
 
 <h3>${c.name}</h3>
 
 <img src="${c.img}">
 
-<div>HP ${c.hp}</div>
-
-<div class="rarity">${c.rarity}</div>
+<p>HP ${c.hp}</p>
 
 </div>
 
 `
 
 })
-
-}
-
-window.openCard=(name,img,hp,rarity)=>{
-
-cardView.classList.remove("hidden")
-
-bigCard.innerHTML=`
-
-<div class="card">
-
-<h2>${name}</h2>
-
-<img src="${img}">
-
-<p>HP ${hp}</p>
-
-<p>${rarity}</p>
-
-</div>
-
-`
-
-}
-
-window.closeCard=()=>{
-
-cardView.classList.add("hidden")
-
-}
-
-window.useCode=()=>{
-
-if(localStorage.getItem("codeUsed")) return alert("már használtad")
-
-if(creator.value.toLowerCase()=="zserko"){
-
-coins+=1000
-localStorage.setItem("codeUsed",true)
-updateCoins()
-
-}
-
-}
-
-function updateCoins(){
-
-coinsText.innerText=coins+" coin"
-
-}
-
-window.openChest=(type)=>{
-
-let coinReward=0
-
-if(type==1) coinReward=50
-if(type==2) coinReward=120
-if(type==3) coinReward=250
-
-coins+=coinReward
-
-alert("Chest opened +"+coinReward+" coin")
-
-updateCoins()
 
 }
 
